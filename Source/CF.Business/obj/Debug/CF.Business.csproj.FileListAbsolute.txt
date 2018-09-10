@@ -1,0 +1,6 @@
+D:\Personal\Source\CoffeeShop5S\Source2\CF.Api.FnB\CF.Business\bin\Debug\CF.Business.dll
+D:\Personal\Source\CoffeeShop5S\Source2\CF.Api.FnB\CF.Business\bin\Debug\CF.Business.pdb
+D:\Personal\Source\CoffeeShop5S\Source2\CF.Api.FnB\CF.Business\obj\Debug\CF.Business.csprojAssemblyReference.cache
+D:\Personal\Source\CoffeeShop5S\Source2\CF.Api.FnB\CF.Business\obj\Debug\CF.Business.csproj.CoreCompileInputs.cache
+D:\Personal\Source\CoffeeShop5S\Source2\CF.Api.FnB\CF.Business\obj\Debug\CF.Business.dll
+D:\Personal\Source\CoffeeShop5S\Source2\CF.Api.FnB\CF.Business\obj\Debug\CF.Business.pdb
