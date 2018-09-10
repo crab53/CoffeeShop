@@ -22,14 +22,15 @@ namespace CF.Business.Core
 
         public enum EStoreStatus
         {
-
+            Trial = 0,
+            Active = 1,
+            Expired = 2,
         }
 
         public enum EPayType
         {
-            Trial = 0,
-            Active = 1,
-            Expired = 2,
+            Cash = 0,
+            Voucher = 9,
         }
 
         public enum EProductType
