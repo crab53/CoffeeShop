@@ -9,17 +9,12 @@ namespace CF.Data.Entities
     [Table("Setting")]
     public partial class Setting
     {
-        [StringLength(50)]
-        public string ID { get; set; }
-
-        [Required]
+        [Key]
         [StringLength(50)]
         public string StoreID { get; set; }
         
         public string JsonSetting { get; set; }
-
-        public bool IsActive { get; set; }
-
+        
         public bool IsDelete { get; set; }
     }
 }
