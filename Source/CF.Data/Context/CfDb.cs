@@ -27,6 +27,7 @@ namespace CF.Data.Context
         public virtual DbSet<Store> Stores { get; set; }
         public virtual DbSet<Table> Tables { get; set; }
         public virtual DbSet<Zone> Zones { get; set; }
+        public virtual DbSet<License> Licenses { get; set; }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {

@@ -33,6 +33,8 @@ namespace CF.Data.Entities
 
         public string Description { get; set; }
 
+        public int NumberOfOrder { get; set; }
+
         public bool IsActive { get; set; }
 
         public bool IsDelete { get; set; }

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CF.DTO
+namespace CF.DTO.Asset
 {
-    public class Class1
+    class LicenseDTO
     {
     }
 }

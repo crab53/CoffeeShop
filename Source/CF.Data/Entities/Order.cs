@@ -28,6 +28,8 @@ namespace CF.Data.Entities
         [StringLength(50)]
         public string CustomerID { get; set; }
 
+        public int Cover { get; set; }
+
         [Required]
         [StringLength(50)]
         public string OrderNo { get; set; }

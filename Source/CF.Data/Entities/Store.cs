@@ -31,6 +31,8 @@ namespace CF.Data.Entities
 
         public int StoreStatus { get; set; }
 
+        public DateTime ExpiredDate { get; set; }
+
         public bool IsDelete { get; set; }
     }
 }
