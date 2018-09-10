@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CF.Business;
+using CF.Business.Business.Support;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -17,6 +19,7 @@ namespace CF.Api.FnB.Controllers
         [HttpPost, Route("api/test/gettest")]
         public async Task<TestDTO> GetTest(TestDTO request)
         {
+            CFBusTest.Instance.GetTest();
             return request;
         }
     }

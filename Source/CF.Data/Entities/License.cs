@@ -6,8 +6,8 @@
     using System.ComponentModel.DataAnnotations.Schema;
     using System.Data.Entity.Spatial;
 
-    [Table("Order")]
-    public class License
+    [Table("License")]
+    public partial class License
     {
         [StringLength(50)]
         public string ID { get; set; }

@@ -38,5 +38,13 @@ namespace CF.Business.Core
             Modifier = 2,
         }
 
+        public enum EPeriodType
+        {
+            Day = 1,
+            Week = 2,
+            Month = 3,
+            Year = 4,
+        }
+
     }
 }
