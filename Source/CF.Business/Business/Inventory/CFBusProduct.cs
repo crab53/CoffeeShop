@@ -43,7 +43,7 @@ namespace CF.Business.Business.Inventory
                         query = query.Where(o => o.ProductType == input.ProductType);
 
                     response.ListProduct = query.OrderBy(o => o.Name).Skip(input.PageIndex * input.PageSize).Take(input.PageSize)
-                        .Join(_db.Categories, p=>p.CategoryID, c=>c.ID, (p, c)=> new { p, c})
+                        .Join(_db.Categories, p => p.CategoryID, c => c.ID, (p, c) => new { p, c })
                         .Select(o => new ProductDTO()
                         {
                             ID = o.p.ID,
@@ -57,6 +57,41 @@ namespace CF.Business.Business.Inventory
                             ImageUrl = o.p.ImageUrl,
                         }).ToList();
                     response.Success = true;
+                }
+            }
+            catch (Exception ex) { DebugLogError(methodName, ex); }
+            DebugLogInfo(methodName, response);
+            return response;
+        }
+
+        public GetProductInfoResponse GetListProduct(GetProductInfoRequest input)
+        {
+            string methodName = MethodBase.GetCurrentMethod().Name;
+            DebugLogInfo(methodName, input);
+            GetProductInfoResponse response = new GetProductInfoResponse();
+            try
+            {
+                using (var _db = new CfDb())
+                {
+                    response.ProductInfo = _db.Products.Where(o => o.ID == input.ID && o.StoreID == input.StoreID && !o.IsDelete)
+                        .Join(_db.Categories, p => p.CategoryID, c => c.ID, (p, c) => new { p, c })
+                        .Select(o => new ProductDTO()
+                        {
+                            ID = o.p.ID,
+                            CategoryID = o.c.ID,
+                            CategoryName = o.c.Name,
+                            Name = o.p.Name,
+                            Description = o.p.Description,
+                            IsActive = o.p.IsActive,
+                            ProductType = o.p.ProductType,
+                            Price = o.p.Price,
+                            ImageUrl = o.p.ImageUrl,
+                        }).FirstOrDefault();
+
+                    if (response.ProductInfo != null)
+                        response.Success = true;
+                    else
+                        response.Message = "Không tìm thấy sản phẩm này.";
                 }
             }
             catch (Exception ex) { DebugLogError(methodName, ex); }
