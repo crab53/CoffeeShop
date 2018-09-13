@@ -245,13 +245,13 @@ namespace CF.Business.Business.Permission
                             if (_db.SaveChanges() > 0)
                                 response.Success = true;
                             else
-                                response.Message = "Đã có lỗi xảy ra. Tạm thời không thể xoá sản phẩm.";
+                                response.Message = "Đã có lỗi xảy ra. Tạm thời không thể xoá nhân viên.";
                         }
                         else
                             response.Message = "Không thể xoá SuperAdmin.";
                     }
                     else
-                        response.Message = "Không tìm thấy sản phẩm được chọn.";
+                        response.Message = "Không tìm thấy nhân viên được chọn.";
                 }
             }
             catch (Exception ex) { Log.Logger.Error("Error" + methodName, ex); }
