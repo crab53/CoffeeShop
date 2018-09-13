@@ -9,6 +9,7 @@ namespace CF.Data.Entities
     [Table("Order")]
     public partial class Order
     {
+        [Key]
         [StringLength(50)]
         public string ID { get; set; }
 

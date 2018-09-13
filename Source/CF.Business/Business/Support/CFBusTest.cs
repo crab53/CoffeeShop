@@ -1,10 +1,7 @@
 ﻿using CF.Data.Context;
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CF.Business.Business.Support
 {
@@ -12,7 +9,9 @@ namespace CF.Business.Business.Support
     {
         private static CFBusTest instance;
 
-        private CFBusTest() { }
+        private CFBusTest()
+        {
+        }
 
         public static CFBusTest Instance
         {
@@ -30,6 +29,7 @@ namespace CF.Business.Business.Support
                 using (var _db = new CfDb())
                 {
                     var cus = _db.Customers.ToList();
+                    Log.Logger.Info("Test", cus);
                 }
             }
             catch (Exception ex) { Debug.WriteLine(ex.Message); }

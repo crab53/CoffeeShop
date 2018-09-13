@@ -9,6 +9,7 @@ namespace CF.Data.Entities
     [Table("Category")]
     public partial class Category
     {
+        [Key]
         [StringLength(50)]
         public string ID { get; set; }
 
@@ -22,6 +23,8 @@ namespace CF.Data.Entities
         [Required]
         [StringLength(100)]
         public string Name { get; set; }
+
+        public string NameStr { get; set; }
 
         public string Description { get; set; }
 

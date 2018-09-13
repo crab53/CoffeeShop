@@ -9,6 +9,7 @@ namespace CF.Data.Entities
     [Table("OrderDetail")]
     public partial class OrderDetail
     {
+        [Key]
         [StringLength(50)]
         public string ID { get; set; }
 
@@ -18,6 +19,8 @@ namespace CF.Data.Entities
 
         [StringLength(50)]
         public string ProductID { get; set; }
+
+        public string ProductName { get; set; }
 
         public double Price { get; set; }
 

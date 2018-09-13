@@ -9,8 +9,13 @@ namespace CF.Data.Entities
     [Table("Role")]
     public partial class Role
     {
+        [Key]
         [StringLength(50)]
         public string ID { get; set; }
+
+        [Required]
+        [StringLength(50)]
+        public string StoreID { get; set; }
 
         [Required]
         [StringLength(100)]

@@ -9,6 +9,7 @@ namespace CF.Data.Entities
     [Table("Product")]
     public partial class Product
     {
+        [Key]
         [StringLength(50)]
         public string ID { get; set; }
 
@@ -28,6 +29,8 @@ namespace CF.Data.Entities
         [Required]
         [StringLength(200)]
         public string Name { get; set; }
+
+        public string NameStr { get; set; }
 
         public double Price { get; set; }
 

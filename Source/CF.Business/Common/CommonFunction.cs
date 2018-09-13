@@ -3,9 +3,7 @@ using CF.Data.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace CF.Business.Common
 {
@@ -33,5 +31,16 @@ namespace CF.Business.Common
             } while (listKeyExist.Contains(key));
             return key;
         }
+
+        public static string RemoveSign4VietnameseString(string str)
+        {
+            for (int i = 1; i < Constants.VietnameseSigns.Length; i++)
+                for (int j = 0; j < Constants.VietnameseSigns[i].Length; j++)
+                    str = str.Replace(Constants.VietnameseSigns[i][j], Constants.VietnameseSigns[0][i - 1]);
+
+            return str.Trim();
+        }
+
+
     }
 }

@@ -9,6 +9,7 @@ namespace CF.Data.Entities
     [Table("Customer")]
     public partial class Customer
     {
+        [Key]
         [StringLength(50)]
         public string ID { get; set; }
 
@@ -21,6 +22,8 @@ namespace CF.Data.Entities
 
         [StringLength(100)]
         public string Name { get; set; }
+
+        public string NameStr { get; set; }
 
         [StringLength(250)]
         public string Email { get; set; }

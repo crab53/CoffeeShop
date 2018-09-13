@@ -9,6 +9,7 @@ namespace CF.Data.Entities
     [Table("Employee")]
     public partial class Employee
     {
+        [Key]
         [StringLength(50)]
         public string ID { get; set; }
 
@@ -34,6 +35,8 @@ namespace CF.Data.Entities
         [Required]
         [StringLength(200)]
         public string Name { get; set; }
+
+        public string NameStr { get; set; }
 
         [StringLength(20)]
         public string Phone { get; set; }

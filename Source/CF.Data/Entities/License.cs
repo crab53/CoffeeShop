@@ -9,6 +9,7 @@
     [Table("License")]
     public partial class License
     {
+        [Key]
         [StringLength(50)]
         public string ID { get; set; }
 

@@ -9,6 +9,7 @@ namespace CF.Data.Entities
     [Table("Store")]
     public partial class Store
     {
+        [Key]
         [StringLength(50)]
         public string ID { get; set; }
 
