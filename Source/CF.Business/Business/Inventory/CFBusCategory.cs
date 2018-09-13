@@ -3,11 +3,8 @@ using CF.Data.Context;
 using CF.Data.Entities;
 using CF.DTO.Inventory;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CF.Business.Business.Inventory
 {
@@ -15,7 +12,9 @@ namespace CF.Business.Business.Inventory
     {
         private static CFBusCategory instance;
 
-        private CFBusCategory() { }
+        private CFBusCategory()
+        {
+        }
 
         public static CFBusCategory Instance
         {

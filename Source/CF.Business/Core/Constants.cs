@@ -8,6 +8,9 @@ namespace CF.Business.Core
 {
     public class Constants
     {
+        public static DateTime MinDate = new DateTime(1900, 01, 01, 12, 00, 00);
+        public static DateTime MaxDate = new DateTime(9999, 12, 31, 12, 00, 00);
+
         public const string KeyChar = "abcdefghijklmnopqrstuvwxyz0123456789";
         public static readonly string[] VietnameseSigns = new string[] { "aAeEoOuUiIdDyY", "áàạảãâấầậẩẫăắằặẳẵ", "ÁÀẠẢÃÂẤẦẬẨẪĂẮẰẶẲẴ", "éèẹẻẽêếềệểễ", "ÉÈẸẺẼÊẾỀỆỂỄ", "óòọỏõôốồộổỗơớờợởỡ", "ÓÒỌỎÕÔỐỒỘỔỖƠỚỜỢỞỠ", "úùụủũưứừựửữ", "ÚÙỤỦŨƯỨỪỰỬỮ", "íìịỉĩ", "ÍÌỊỈĨ", "đ", "Đ", "ýỳỵỷỹ", "ÝỲỴỶỸ" };
 

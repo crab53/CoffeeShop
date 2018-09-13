@@ -36,8 +36,6 @@ namespace CF.Data.Entities
         [StringLength(200)]
         public string Name { get; set; }
 
-        public string NameStr { get; set; }
-
         [StringLength(20)]
         public string Phone { get; set; }
 
@@ -47,6 +45,8 @@ namespace CF.Data.Entities
         public DateTime Birthday { get; set; }
 
         public DateTime HiredDate { get; set; }
+
+        public bool IsActive { get; set; }
 
         public bool IsDelete { get; set; }
     }

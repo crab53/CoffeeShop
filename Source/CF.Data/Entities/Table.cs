@@ -25,6 +25,8 @@ namespace CF.Data.Entities
         [StringLength(50)]
         public string Name { get; set; }
 
+        public string NameStr { get; set; }
+
         public int Cover { get; set; }
 
         public int XPoint { get; set; }
@@ -34,6 +36,8 @@ namespace CF.Data.Entities
         public int ViewMode { get; set; }
 
         public string Description { get; set; }
+
+        public bool IsActive { get; set; }
 
         public bool IsDelete { get; set; }
     }

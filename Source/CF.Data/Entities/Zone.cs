@@ -21,9 +21,15 @@ namespace CF.Data.Entities
         [StringLength(100)]
         public string Name { get; set; }
 
+        public string NameStr { get; set; }
+
         public bool IsActive { get; set; }
 
         public string Description { get; set; }
+
+        public int Width { get; set; }
+
+        public int Height { get; set; }
 
         public bool IsDelete { get; set; }
     }

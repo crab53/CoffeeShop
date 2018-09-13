@@ -3,26 +3,46 @@ using CF.Data.Context;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography;
+using System.Text;
 using System.Threading;
 
 namespace CF.Business.Common
 {
     public class CommonFunction
     {
-        public static string GenerateKey(int length = 8)
+        public static string GetSHA512(string text)
+        {
+            UnicodeEncoding encode = new UnicodeEncoding();
+            byte[] message = encode.GetBytes(text);
+
+            SHA512 hashString = new SHA512Managed();
+            string hex = string.Empty;
+
+            var hashValue = hashString.ComputeHash(message);
+            foreach (byte x in hashValue)
+                hex += x.ToString("x2");
+
+            return hex;
+        }
+
+        public static string GenerateKey(bool isCode = true, int length = 8)
         {
             Random random = new Random();
             string key = "";
             List<string> listKeyExist = new List<string>();
 
-            try
+            if (isCode)
             {
-                using (var _db = new CfDb())
+                try
                 {
-                    listKeyExist = _db.Licenses.Where(o => !string.IsNullOrEmpty(o.Key)).Select(o => o.Key).ToList();
+                    using (var _db = new CfDb())
+                    {
+                        listKeyExist = _db.Licenses.Where(o => !string.IsNullOrEmpty(o.Key)).Select(o => o.Key).ToList();
+                    }
                 }
+                catch (Exception ex) { }
             }
-            catch (Exception ex) { }
 
             do
             {
