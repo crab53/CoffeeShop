@@ -39,7 +39,7 @@ namespace CF.Business.Business.Inventory
                     if (input.IsShowActive)
                         query = query.Where(o => o.IsActive);
 
-                    response.ListCategory = query.Skip(input.PageIndex * input.PageSize).Take(input.PageSize)
+                    response.ListCategory = query.OrderBy(o => o.Name).Skip(input.PageIndex * input.PageSize).Take(input.PageSize)
                         .Select(o => new CategoryDTO()
                         {
                             ID = o.ID,

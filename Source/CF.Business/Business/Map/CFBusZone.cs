@@ -39,7 +39,7 @@ namespace CF.Business.Business.Map
                     if (input.IsShowActive)
                         query = query.Where(o => o.IsActive);
 
-                    response.ListZone = query.Skip(input.PageIndex * input.PageSize).Take(input.PageSize)
+                    response.ListZone = query.OrderBy(o => o.Name).Skip(input.PageIndex * input.PageSize).Take(input.PageSize)
                         .Select(o => new ZoneDTO()
                         {
                             ID = o.ID,
