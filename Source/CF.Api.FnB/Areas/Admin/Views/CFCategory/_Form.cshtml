@@ -1,35 +1,53 @@
 ﻿@model CF.DTO.Inventory.CategoryDTO
 
+<style>
+    #parent {
+        display: table;
+    }
+
+
+    #child {
+        display: table-cell;
+        vertical-align: middle;
+    }
+</style>
+
 
 @Html.HiddenFor(model => model.ID)
 @Html.HiddenFor(model => model.ImageUrl)
 <div class="row">
-    <div class="col-lg-4">
-        <div class="form-group">
-            <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight fontLighter">Picture</label>
-            <div class="col-md-2 col-sm-2 col-xs-12">
+    <div class="col-lg-4" id="parent">
+        <div id="child">
+            <div class="form-group">
                 @if (!string.IsNullOrEmpty(Model.ImageUrl))
                 {
                     <img id="upload-preview" src="@Model.ImageUrl" height="100" width="100" class="" style="border-radius:100% !important" />
                 }
                 else
                 {
-                    <img id="upload-preview" class="" src="" height="100" width="100" style="border-radius:100% !important" />
+                    <img id="upload-preview" class="" src="@Url.Content("~/Areas/Admin/images/product_1/product_default.jpg")" height="100" width="100" style="border-radius:100% !important" />
                 }
             </div>
-            <div class="col-md-1 col-sm-3 col-xs-12" style="line-height:55px;">
+
+            <div class="form-group" style="line-height:55px;">
                 <div class="upload-btn-wrapper" style="cursor:pointer;">
                     <button class="btn btn-default" type="button" onclick="showPictureUpload();" style="margin-top:-6%;">Chọn hình</button>
-                    @Html.TextBoxFor(model => model.PictureUpload, new { @type = "file", @onchange = "PreviewImage(this,\"upload-preview\")", @accept = "*.jpg", @class = "hidden", @id = "urlImage" })
+                    <input type="file" name="myFile" id="urlImage" class="hidden" onchange="PreviewImage(this,'upload-preview')" accept="*.jpg" />
                 </div>
             </div>
         </div>
+
+
     </div>
 
     <div class="col-lg-8">
         <div class="form-group">
             <label>Tên category:</label>
             @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @placeholder = "Tên", @autocomplete = "off" })
+        </div>
+
+        <div class="form-group">
+            <label>Trạng thái</label> <label>@Html.CheckBoxFor(model => model.IsActive, new { @class = "icheck" })</label>
         </div>
 
         <div class="form-group">
@@ -44,42 +62,37 @@
 <script src="@Url.Content("~/Areas/Admin/js/lib/bootstrap/js/bootstrap.min.js")"></script>
 
 <script>
+    $(document).ready(function () {
+    });
+
     function showPictureUpload() {
         $('[id=urlImage]').click();
     }
 
     function SubmitForm(action) {
+
         var name = $('#Name').val();
         var description = $('#Description').val();
         var ID = $('#ID').val();
-        var ImageUrl = $('#ImageUrl').val();;
-
-        debugger;
-        /* get image data */
+        var ImageUrl = $('#ImageUrl').val();
         var pictureUpload = $('#urlImage');
-        var oFReader = new FileReader();
-        var ImageData = "";
-        if (pictureUpload[0].files.length > 0) {
-            oFReader.readAsDataURL(pictureUpload[0].files[0]);
-            ImageData = oFReader.result;
-        }
 
         /* create request  */
-        var request = {
-            Name: name,
-            Description: description,
-            ImageData: ImageData,
-            ID: ID,
-            ImageUrl: ImageUrl,
-        };
+        var formData = new FormData();
+        formData.append("Name", name);
+        formData.append("Description", description);
+        formData.append("ID", ID);
+        formData.append("ImageUrl", ImageUrl);
+        if (pictureUpload[0].files.length > 0) {
+            formData.append("UploadedImage", pictureUpload[0].files[0]);
+        }
 
         /* call ajax */
         $.ajax({
-            url: '/Admin/CFCategory/Create',
+            url: '/Admin/CFCategory/CreateOrUpdate',
             type: "post",
-            traditional: true,
-            data: JSON.stringify(request),
-            contentType: "application/json; charset=utf-8",
+            data: formData,
+            contentType: false,
             processData: false,
             success: function () {
                 $('#modalDetail').modal('hide');

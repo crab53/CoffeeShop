@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using CF.Api.FnB.Areas.Admin.Models;
 using CF.Business.Business.Inventory;
+using CF.Business.Core;
 using CF.DTO.Inventory;
-using AutoMapper;
 namespace CF.Api.FnB.Areas.Admin.Controllers
 {
     public class CFCategoryController : Controller
     {
-        // GET: Admin/Product
+        // GET: Admin/CFCategory
         public ActionResult Index()
         {
             /* show view */
@@ -26,70 +26,69 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
             /* request get data */
             GetListCategoryRequest request = new GetListCategoryRequest()
             {
-
+                StoreID = "123StoreID",
+                PageIndex = 0,
+                PageSize = 9999,
             };
             var response = CFBusCategory.Instance.GetListCategory(request);
 
             /* response */
             if (response.Success == true)
             {
-                if (response.ListCategory.Count == 0) /* test data */
-                {
-                    model.Add(new CategoryDTO { ID = "Pro01", Name = "pro 01", Description = "Description", ImageUrl = "" });
-                    model.Add(new CategoryDTO { ID = "Pro02", Name = "pro 01", Description = "Description", ImageUrl = "" });
-                    model.Add(new CategoryDTO { ID = "Pro03", Name = "pro 01", Description = "Description", ImageUrl = "" });
-                    model.Add(new CategoryDTO { ID = "Pro04", Name = "pro 01", Description = "Description", ImageUrl = "" });
-                    model.Add(new CategoryDTO { ID = "Pro05", Name = "pro 01", Description = "Description", ImageUrl = "" });
-                    model.Add(new CategoryDTO { ID = "Pro06", Name = "pro 01", Description = "Description", ImageUrl = "" });
-                    model.Add(new CategoryDTO { ID = "Pro07", Name = "pro 01", Description = "Description", ImageUrl = "" });
-                    model.Add(new CategoryDTO { ID = "Pro08", Name = "pro 01", Description = "Description", ImageUrl = "" });
-                    model.Add(new CategoryDTO { ID = "Pro09", Name = "pro 01", Description = "Description", ImageUrl = "" });
-                    model.Add(new CategoryDTO { ID = "Pro10", Name = "pro 01", Description = "Description", ImageUrl = "" });
-                }
+                model = response.ListCategory;
             }
+
             return PartialView("_ListItem", model);
         }
 
         public ActionResult Delete(string ID)
         {
-            var msg = "";
-            var result = true;
-            //var result = _fac.HidePin(ID, "Admin", ref msg);
-            if (result)
+            /* request bus */
+            var request = new DeleteCategoryRequest()
+            {
+                ID = ID,
+                StoreID = "123StoreID"
+            };
+            var response = CFBusCategory.Instance.DeleteCategory(request);
+
+            /* response */
+            if (response.Success)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
             }
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
-
+        
         public ActionResult LoadDetail(string ID)
         {
             var model = new CategoryDTO();
-
-            var msg = "";
-            var result = true;
-            //var result = _fac.HidePin(ID, "Admin", ref msg);
-            if (result)
+            
+            /* request bus */
+            var request = new GetCategoryInfoRequest()
             {
-                Response.StatusCode = (int)HttpStatusCode.OK;
-
-                //return new HttpStatusCodeResult(HttpStatusCode.OK);
-
-                return PartialView("_Form", model);
+                ID = ID,
+                StoreID = "123StoreID"
+            };
+            var response = CFBusCategory.Instance.GetCategoryInfo(request);
+            if (response.Success)
+            {
+                model = response.Category;
             }
             return PartialView("_Form", model);
         }
 
-        public ActionResult Create(CategoryDTO Model)
+        public ActionResult CreateOrUpdate(CategoryDTO Model)
         {
             try
             {
                 /* request */
+                Model.PictureUpload = System.Web.HttpContext.Current.Request.Files["UploadedImage"];
                 var request = new CreateCategoryRequest
                 {
                     Category = Model,
+                    StoreID = "123StoreID",
                 };
-
+                
                 /* call bus */
                 var response = CFBusCategory.Instance.CreateCategory(request);
 

@@ -13,11 +13,14 @@ namespace CF.DTO.Inventory
         public string ID { get; set; }
         public string ImageUrl { get; set; }
         public string ImageData { get; set; }
+        public HttpPostedFile PictureUpload { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
-        [DataType(DataType.Upload)]
-        public HttpPostedFileBase PictureUpload { get; set; }
+        public CategoryDTO()
+        {
+            IsActive = true;
+        }
     }
 
     #region Request

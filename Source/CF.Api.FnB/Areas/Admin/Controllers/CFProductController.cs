@@ -4,15 +4,14 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using CF.Api.FnB.Areas.Admin.Models;
 using CF.Business.Business.Inventory;
 using CF.DTO.Inventory;
-using AutoMapper;
+
 namespace CF.Api.FnB.Areas.Admin.Controllers
 {
     public class CFProductController : Controller
     {
-        // GET: Admin/Product
+        // GET: Admin/CFProduct
         public ActionResult Index()
         {
             /* show view */
@@ -21,7 +20,7 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
 
         public ActionResult LoadGrid()
         {
-            var model = new List<ProductModels>();
+            var model = new List<ProductDTO>();
 
             /* request get data */
             GetListProductRequest request = new GetListProductRequest()
@@ -35,21 +34,21 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
             {
                 if (response.ListProduct.Count == 0) /* test data */
                 {
-                    model.Add(new ProductModels { ID = "Pro01", Name = "pro 01", Price = 1, ImageUrl = "" });
-                    model.Add(new ProductModels { ID = "Pro02", Name = "pro 01", Price = 2, ImageUrl = "" });
-                    model.Add(new ProductModels { ID = "Pro03", Name = "pro 01", Price = 3, ImageUrl = "" });
-                    model.Add(new ProductModels { ID = "Pro04", Name = "pro 01", Price = 4, ImageUrl = "" });
-                    model.Add(new ProductModels { ID = "Pro05", Name = "pro 01", Price = 5, ImageUrl = "" });
-                    model.Add(new ProductModels { ID = "Pro06", Name = "pro 01", Price = 6, ImageUrl = "" });
-                    model.Add(new ProductModels { ID = "Pro07", Name = "pro 01", Price = 7, ImageUrl = "" });
-                    model.Add(new ProductModels { ID = "Pro08", Name = "pro 01", Price = 8, ImageUrl = "" });
-                    model.Add(new ProductModels { ID = "Pro09", Name = "pro 01", Price = 9, ImageUrl = "" });
-                    model.Add(new ProductModels { ID = "Pro10", Name = "pro 01", Price = 10, ImageUrl = "" });
-                    model.Add(new ProductModels { ID = "Pro11", Name = "pro 01", Price = 11, ImageUrl = "" });
-                    model.Add(new ProductModels { ID = "Pro12", Name = "pro 01", Price = 12, ImageUrl = "" });
-                    model.Add(new ProductModels { ID = "Pro13", Name = "pro 01", Price = 13, ImageUrl = "" });
-                    model.Add(new ProductModels { ID = "Pro14", Name = "pro 01", Price = 14, ImageUrl = "" });
-                    model.Add(new ProductModels { ID = "Pro15", Name = "pro 01", Price = 15, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro01", Name = "pro 01", Price = 1, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro02", Name = "pro 01", Price = 2, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro03", Name = "pro 01", Price = 3, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro04", Name = "pro 01", Price = 4, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro05", Name = "pro 01", Price = 5, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro06", Name = "pro 01", Price = 6, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro07", Name = "pro 01", Price = 7, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro08", Name = "pro 01", Price = 8, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro09", Name = "pro 01", Price = 9, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro10", Name = "pro 01", Price = 10, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro11", Name = "pro 01", Price = 11, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro12", Name = "pro 01", Price = 12, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro13", Name = "pro 01", Price = 13, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro14", Name = "pro 01", Price = 14, ImageUrl = "" });
+                    model.Add(new ProductDTO { ID = "Pro15", Name = "pro 01", Price = 15, ImageUrl = "" });
                 }
             }
             return PartialView("_ListItem", model);
@@ -69,7 +68,7 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
 
         public ActionResult LoadProductDetail(string ID)
         {
-            var model = new ProductModels();
+            var model = new ProductDTO();
 
             var msg = "";
             var result = true;
@@ -85,20 +84,14 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
             return PartialView("_Form", model);
         }
 
-        public ActionResult Create(ProductModels Model)
+        public ActionResult Create(ProductDTO Model)
         {
             try
             {
                 /* request */
-                var config = new MapperConfiguration((cfg => {
-                    cfg.CreateMap<ProductModels, ProductDTO>();
-                }));
-                IMapper mapper = config.CreateMapper();
-                var product = mapper.Map<ProductModels, ProductDTO> (Model);
-
                 var request = new CreateProductRequest
                 {
-                    Product = product,
+                    Product = Model,
                 };
 
                 /* call bus */

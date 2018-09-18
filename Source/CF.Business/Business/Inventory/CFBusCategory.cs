@@ -1,4 +1,5 @@
 ﻿using CF.Business.Common;
+using CF.Business.Core;
 using CF.Data.Context;
 using CF.Data.Entities;
 using CF.DTO.Inventory;
@@ -46,7 +47,7 @@ namespace CF.Business.Business.Inventory
                             Name = o.Name,
                             Description = o.Description,
                             IsActive = o.IsActive,
-                            ImageUrl = o.ImageUrl,
+                            ImageUrl = string.IsNullOrEmpty(o.ImageUrl)?"": Constants._PublicImages+o.ImageUrl,
                         }).ToList();
                     response.Success = true;
                 }
@@ -72,7 +73,7 @@ namespace CF.Business.Business.Inventory
                             Name = o.Name,
                             Description = o.Description,
                             IsActive = o.IsActive,
-                            ImageUrl = o.ImageUrl,
+                            ImageUrl = string.IsNullOrEmpty(o.ImageUrl) ? "" : Constants._PublicImages + o.ImageUrl,
                         }).FirstOrDefault();
 
                     if (response.Category != null)
