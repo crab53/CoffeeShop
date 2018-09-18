@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace CF.DTO.Permission
 {
-    class PermissionDTO
+    public class PermissionDTO
     {
+
     }
 }

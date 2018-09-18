@@ -26,22 +26,26 @@ namespace CF.Business.Common
             return hex;
         }
 
-        public static string GenerateKey(bool isCode = true, int length = 8)
+        public static string GenerateKey(Constants.EKey eKey, int length = 8)
         {
             Random random = new Random();
             string key = "";
             List<string> listKeyExist = new List<string>();
 
-            if (isCode)
+            switch (eKey)
             {
-                try
-                {
-                    using (var _db = new CfDb())
+                case Constants.EKey.Code:
+                    try
                     {
-                        listKeyExist = _db.Licenses.Where(o => !string.IsNullOrEmpty(o.Key)).Select(o => o.Key).ToList();
+                        using (var _db = new CfDb())
+                        {
+                            listKeyExist = _db.Licenses.Where(o => !string.IsNullOrEmpty(o.Key)).Select(o => o.Key).ToList();
+                        }
                     }
-                }
-                catch (Exception ex) { }
+                    catch (Exception ex) { Log.Logger.Error("ErrorGenerateKey", ex); }
+                    break;
+                case Constants.EKey.Password:
+                    break;
             }
 
             do

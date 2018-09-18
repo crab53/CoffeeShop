@@ -122,7 +122,7 @@ namespace CF.Business.Business.Permission
                                 var employee = _db.Employees.Where(o => o.Email == email && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
                                 if (employee == null)
                                 {
-                                    string pass = CommonFunction.GenerateKey(false);
+                                    string pass = CommonFunction.GenerateKey(Constants.EKey.Password);
 
                                     employee = new Employee()
                                     {

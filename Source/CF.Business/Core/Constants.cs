@@ -51,5 +51,10 @@ namespace CF.Business.Core
             Year = 4,
         }
 
+        public enum EKey
+        {
+            Code = 0,
+            Password = 1,
+        }
     }
 }
