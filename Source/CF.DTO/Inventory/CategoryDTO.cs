@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace CF.DTO.Inventory
 {
@@ -10,9 +12,12 @@ namespace CF.DTO.Inventory
     {
         public string ID { get; set; }
         public string ImageUrl { get; set; }
+        public string ImageData { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
+        [DataType(DataType.Upload)]
+        public HttpPostedFileBase PictureUpload { get; set; }
     }
 
     #region Request

@@ -1,0 +1,100 @@
+﻿@{
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "Categories";
+}
+
+<div class="container-fluid ">
+
+    @using (Html.BeginForm("LoadGrid", "CFCategory", FormMethod.Post, new { @class = "form-horizontal search-form" }))
+    {
+    }
+    <div class="detail-view">
+        @*@Html.Partial("_ListItem", Model)*@
+    </div>
+</div>
+<!-- Modal -->
+<!-- Large modal -->
+
+<div class="modal fade bd-example-modal-lg" id="modalDetail" tabindex="-1" role="dialog" @*aria-hidden="true"*@>
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Category info <span style="color:#d9534f;font-weight:bold" id="idName"></span></h4>
+            </div>
+            <div class="modal-body" style="display:initial">
+                <div class="idDetail" id="idDetail">
+                    <!-- Product form -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <a href="javascript:void(0);" class="btn btn-success" id="btn-edit-save" onclick="SubmitForm('#form-create')">
+                    <i class="fa fa-save"></i>Lưu
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="@Url.Content("~/Scripts/common.js")"></script>
+
+<script>
+    $(document).ready(function () {
+        LoadGrid();
+    })
+
+    function ShowModal(id, Name) {
+        var modal = $("#modalDetail");
+        $("#idName").val(Name);
+        $(modal).modal({
+            keyboard: false,
+            show: true,
+        });
+        LoadProductDetail("#idDetail", id);
+    }
+
+    function LoadProductDetail(element, id) {
+        $.ajax({
+            url: '/Admin/CFCategory/LoadDetail',
+            type: 'get',
+            data: { ID: id },
+            dataType: 'html',
+
+            success: function (data) {
+                $(element).html(data);
+            },
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }, error: function (e) {
+                alert("failed");
+            },
+        });
+    }
+
+    function Delete(id) {
+        $.ajax({
+            url: '/Admin/CFCategory/Delete',
+            type: 'post',
+            data: { ID: id },
+            dataType: 'html',
+            traditional: true,
+            error: function (e) {
+            },
+            success: function (data) {
+                LoadGrid();
+            },
+            beforeSend: function () {
+                $('.se-pre-con').show();
+            },
+            complete: function () {
+                $('.se-pre-con').hide();
+            }
+        });
+    }
+    
+</script>
+
+
