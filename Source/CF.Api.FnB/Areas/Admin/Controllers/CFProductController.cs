@@ -89,13 +89,13 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
             try
             {
                 /* request */
-                var request = new CreateProductRequest
+                var request = new CreateOrUpdateProductRequest
                 {
                     Product = Model,
                 };
 
                 /* call bus */
-                var response = CFBusProduct.Instance.CreateProduct(request);
+                var response = CFBusProduct.Instance.CreateOrUpdateProduct(request);
 
                 /* response */
                 if (response.Success)

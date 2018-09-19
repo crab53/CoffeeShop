@@ -29,16 +29,11 @@ namespace CF.DTO.Map
 
     public class GetTableInfoRequest : RequestBase { }
 
-    public class CreateTableRequest : RequestBase
+    public class CreateOrUpdateTableRequest : RequestBase
     {
         public TableDTO Table { get; set; }
     }
-
-    public class UpdateTableRequest : RequestBase
-    {
-        public TableDTO Table { get; set; }
-    }
-
+    
     public class DeleteTableRequest : RequestBase { }
 
     #endregion Request
@@ -60,10 +55,8 @@ namespace CF.DTO.Map
         public TableDTO Table { get; set; }
     }
 
-    public class CreateTableResponse : ResponseBase { }
-
-    public class UpdateTableResponse : ResponseBase { }
-
+    public class CreateOrUpdateTableResponse : ResponseBase { }
+    
     public class DeleteTableResponse : ResponseBase { }
 
     #endregion Response

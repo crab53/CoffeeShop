@@ -28,16 +28,11 @@ namespace CF.DTO.Inventory
 
     public class GetProductInfoRequest : RequestBase { }
 
-    public class CreateProductRequest : RequestBase
+    public class CreateOrUpdateProductRequest : RequestBase
     {
         public ProductDTO Product { get; set; }
     }
-
-    public class UpdateProductRequest : RequestBase
-    {
-        public ProductDTO Product { get; set; }
-    }
-
+    
     public class DeleteProductRequest : RequestBase { }
 
     #endregion Request
@@ -59,10 +54,8 @@ namespace CF.DTO.Inventory
         public ProductDTO Product { get; set; }
     }
 
-    public class CreateProductResponse : ResponseBase { }
-
-    public class UpdateProductResponse : ResponseBase { }
-
+    public class CreateOrUpdateProductResponse : ResponseBase { }
+    
     public class DeleteProductResponse : ResponseBase { }
 
     #endregion Response

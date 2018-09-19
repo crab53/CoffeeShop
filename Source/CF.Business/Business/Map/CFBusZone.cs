@@ -88,11 +88,11 @@ namespace CF.Business.Business.Map
             return response;
         }
 
-        public CreateZoneResponse CreateZone(CreateZoneRequest input)
+        public CreateOrUpdateZoneResponse CreateOrUpdateZone(CreateOrUpdateZoneRequest input)
         {
             string methodName = MethodBase.GetCurrentMethod().Name;
             Log.Logger.Info(methodName, input);
-            CreateZoneResponse response = new CreateZoneResponse();
+            CreateOrUpdateZoneResponse response = new CreateOrUpdateZoneResponse();
             try
             {
                 using (var _db = new CfDb())
@@ -102,30 +102,67 @@ namespace CF.Business.Business.Map
                         if (!string.IsNullOrEmpty(input.Zone.Name))
                         {
                             string nameStr = CommonFunction.RemoveSign4VietnameseString(input.Zone.Name);
-                            var zone = _db.Zones.Where(o => o.NameStr == nameStr && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                            if (zone == null)
+                            if (string.IsNullOrEmpty(input.Zone.ID))
                             {
-                                zone = new Zone()
+                                var zone = _db.Zones.Where(o => o.NameStr == nameStr && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                if (zone == null)
                                 {
-                                    ID = Guid.NewGuid().ToString(),
-                                    StoreID = input.StoreID,
-                                    Name = input.Zone.Name,
-                                    NameStr = nameStr,
-                                    Description = input.Zone.Description,
-                                    Height = input.Zone.Height,
-                                    Width = input.Zone.Width,
-                                    IsActive = input.Zone.IsActive,
-                                    IsDelete = false,
-                                };
-                                _db.Zones.Add(zone);
+                                    zone = new Zone()
+                                    {
+                                        ID = Guid.NewGuid().ToString(),
+                                        StoreID = input.StoreID,
+                                        Name = input.Zone.Name,
+                                        NameStr = nameStr,
+                                        Description = input.Zone.Description,
+                                        Height = input.Zone.Height,
+                                        Width = input.Zone.Width,
+                                        IsActive = input.Zone.IsActive,
+                                        IsDelete = false,
+                                    };
+                                    _db.Zones.Add(zone);
 
-                                if (_db.SaveChanges() > 0)
-                                    response.Success = true;
+                                    if (_db.SaveChanges() > 0)
+                                        response.Success = true;
+                                    else
+                                        response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thêm mới khu vực.";
+                                }
                                 else
-                                    response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thêm mới khu vực.";
+                                    response.Message = "Tên khu vực này đã tồn tại. Vui lòng chọn tên khác.";
                             }
                             else
-                                response.Message = "Tên khu vực này đã tồn tại. Vui lòng chọn tên khác.";
+                            {
+                                var zone = _db.Zones.Where(o => o.NameStr == nameStr && o.ID != input.Zone.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                if (zone == null)
+                                {
+                                    zone = _db.Zones.Where(o => o.ID == input.Zone.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                    if (zone != null)
+                                    {
+                                        var maxPosion = _db.Tables.Where(o => o.StoreID == input.StoreID && o.ZoneID == input.Zone.ID && !o.IsDelete)
+                                            .Select(o => new { x = o.XPoint - 1, y = o.YPoint - 1 }).GroupBy(o => o)
+                                            .Select(o => new { maxX = o.Max(u => u.x), maxY = o.Max(u => u.y) }).FirstOrDefault();
+                                        if (input.Zone.Width >= maxPosion.maxX && input.Zone.Height >= maxPosion.maxY)
+                                        {
+                                            zone.Name = input.Zone.Name;
+                                            zone.NameStr = nameStr;
+                                            zone.Description = input.Zone.Description;
+                                            zone.Height = input.Zone.Height;
+                                            zone.Width = input.Zone.Width;
+                                            zone.IsActive = input.Zone.IsActive;
+
+                                            if (_db.SaveChanges() > 0)
+                                                response.Success = true;
+                                            else
+                                                response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin khu vực.";
+                                        }
+                                        else
+                                            response.Message = "Bạn không thể thay đởi kích thước khu vực. Vui lòng xem lại vị trí cái bàn trong khu vực.";
+                                    }
+                                    else
+                                        response.Message = "Không tìm thấy khu vực được chọn.";
+                                }
+                                else
+                                    response.Message = "Tên khu vực này đã tồn tại. Vui lòng chọn tên khác.";
+                            }
                         }
                         else
                             response.Message = "Vui lòng nhập tên khu vực.";
@@ -138,65 +175,7 @@ namespace CF.Business.Business.Map
             Log.Logger.Info("Response" + methodName, response);
             return response;
         }
-
-        public UpdateZoneResponse UpdateZone(UpdateZoneRequest input)
-        {
-            string methodName = MethodBase.GetCurrentMethod().Name;
-            Log.Logger.Info(methodName, input);
-            UpdateZoneResponse response = new UpdateZoneResponse();
-            try
-            {
-                using (var _db = new CfDb())
-                {
-                    if (input.Zone != null)
-                    {
-                        if (!string.IsNullOrEmpty(input.Zone.Name))
-                        {
-                            string nameStr = CommonFunction.RemoveSign4VietnameseString(input.Zone.Name);
-                            var zone = _db.Zones.Where(o => o.NameStr == nameStr && o.ID != input.Zone.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                            if (zone == null)
-                            {
-                                zone = _db.Zones.Where(o => o.ID == input.Zone.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                                if (zone != null)
-                                {
-                                    var maxPosion = _db.Tables.Where(o => o.StoreID == input.StoreID && o.ZoneID == input.Zone.ID && !o.IsDelete)
-                                        .Select(o => new { x = o.XPoint - 1, y = o.YPoint - 1 }).GroupBy(o => o)
-                                        .Select(o => new { maxX = o.Max(u => u.x), maxY = o.Max(u => u.y) }).FirstOrDefault();
-                                    if (input.Zone.Width >= maxPosion.maxX && input.Zone.Height >= maxPosion.maxY)
-                                    {
-                                        zone.Name = input.Zone.Name;
-                                        zone.NameStr = nameStr;
-                                        zone.Description = input.Zone.Description;
-                                        zone.Height = input.Zone.Height;
-                                        zone.Width = input.Zone.Width;
-                                        zone.IsActive = input.Zone.IsActive;
-
-                                        if (_db.SaveChanges() > 0)
-                                            response.Success = true;
-                                        else
-                                            response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin khu vực.";
-                                    }
-                                    else
-                                        response.Message = "Bạn không thể thay đởi kích thước khu vực. Vui lòng xem lại vị trí cái bàn trong khu vực.";
-                                }
-                                else
-                                    response.Message = "Không tìm thấy khu vực được chọn.";
-                            }
-                            else
-                                response.Message = "Tên khu vực này đã tồn tại. Vui lòng chọn tên khác.";
-                        }
-                        else
-                            response.Message = "Vui lòng nhập tên khu vực.";
-                    }
-                    else
-                        response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin khu vực.";
-                }
-            }
-            catch (Exception ex) { Log.Logger.Error("Error" + methodName, ex); }
-            Log.Logger.Info("Response" + methodName, response);
-            return response;
-        }
-
+        
         public DeleteZoneResponse DeleteZone(DeleteZoneRequest input)
         {
             string methodName = MethodBase.GetCurrentMethod().Name;

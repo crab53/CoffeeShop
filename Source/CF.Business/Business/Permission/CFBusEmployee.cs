@@ -102,123 +102,115 @@ namespace CF.Business.Business.Permission
             return response;
         }
 
-        public CreateEmployeeResponse CreateEmployee(CreateEmployeeRequest input)
+        public CreateOrUpdateEmployeeResponse CreateOrUpdateEmployee(CreateOrUpdateEmployeeRequest input)
         {
             string methodName = MethodBase.GetCurrentMethod().Name;
             Log.Logger.Info(methodName, input);
-            CreateEmployeeResponse response = new CreateEmployeeResponse();
+            CreateOrUpdateEmployeeResponse response = new CreateOrUpdateEmployeeResponse();
             try
             {
                 using (var _db = new CfDb())
                 {
                     if (input.Employee != null)
                     {
-                        var role = _db.Roles.Where(o => o.StoreID == input.StoreID && !o.IsDelete && o.ID == input.Employee.RoleID).FirstOrDefault();
-                        if (role != null)
+                        if (string.IsNullOrEmpty(input.Employee.ID))
                         {
-                            if (!string.IsNullOrEmpty(input.Employee.Name) && !string.IsNullOrEmpty(input.Employee.Email))
+                            var role = _db.Roles.Where(o => o.StoreID == input.StoreID && !o.IsDelete && o.ID == input.Employee.RoleID).FirstOrDefault();
+                            if (role != null)
                             {
-                                string email = input.Employee.Email.ToLower().Trim();
-                                var employee = _db.Employees.Where(o => o.Email == email && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                                if (employee == null)
+                                if (!string.IsNullOrEmpty(input.Employee.Name) && !string.IsNullOrEmpty(input.Employee.Email))
                                 {
-                                    string pass = CommonFunction.GenerateKey(Constants.EKey.Password);
-
-                                    employee = new Employee()
+                                    string email = input.Employee.Email.ToLower().Trim();
+                                    var employee = _db.Employees.Where(o => o.Email == email && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                    if (employee == null)
                                     {
-                                        ID = Guid.NewGuid().ToString(),
-                                        StoreID = input.StoreID,
-                                        RoleID = role.ID,
-                                        IsSA = false,
-                                        ImageUrl = input.Employee.ImageUrl,
-                                        Name = input.Employee.Name,
-                                        Email = email,
-                                        Password = CommonFunction.GetSHA512(pass),
-                                        Phone = input.Employee.Phone,
-                                        Address = input.Employee.Address,
-                                        Birthday = input.Employee.Birthday ?? Constants.MinDate,
-                                        HiredDate = input.Employee.HiredDate ?? Constants.MinDate,
-                                        IsActive = input.Employee.IsActive,
-                                        IsDelete = false,
-                                    };
-                                    _db.Employees.Add(employee);
+                                        string pass = CommonFunction.GenerateKey(Constants.EKey.Password);
 
-                                    if (_db.SaveChanges() > 0)
-                                    {
-                                        response.Success = true;
+                                        employee = new Employee()
+                                        {
+                                            ID = Guid.NewGuid().ToString(),
+                                            StoreID = input.StoreID,
+                                            RoleID = role.ID,
+                                            IsSA = false,
+                                            ImageUrl = input.Employee.ImageUrl,
+                                            Name = input.Employee.Name,
+                                            Email = email,
+                                            Password = CommonFunction.GetSHA512(pass),
+                                            Phone = input.Employee.Phone,
+                                            Address = input.Employee.Address,
+                                            Birthday = input.Employee.Birthday ?? Constants.MinDate,
+                                            HiredDate = input.Employee.HiredDate ?? Constants.MinDate,
+                                            IsActive = input.Employee.IsActive,
+                                            IsDelete = false,
+                                        };
+                                        _db.Employees.Add(employee);
+
+                                        if (_db.SaveChanges() > 0)
+                                        {
+                                            response.Success = true;
+                                        }
+                                        else
+                                            response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thêm mới nhân viên.";
                                     }
                                     else
-                                        response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thêm mới nhân viên.";
+                                        response.Message = "Thư điện tử này đã tồn tại. Vui lòng chọn thư điện tử khác.";
                                 }
                                 else
-                                    response.Message = "Thư điện tử này đã tồn tại. Vui lòng chọn thư điện tử khác.";
+                                    response.Message = "Vui lòng kiểm tra lại tên hoặc thư điện tử của nhân viên.";
                             }
                             else
-                                response.Message = "Vui lòng kiểm tra lại tên hoặc thư điện tử của nhân viên.";
+                                response.Message = "Vui lòng chọn phần quyền cho nhân viên.";
                         }
                         else
-                            response.Message = "Vui lòng chọn phần quyền cho nhân viên.";
+                        {
+                            string email = input.Employee.Email.ToLower().Trim();
+                            var employee = _db.Employees.Where(o => o.Email == email && o.ID != input.Employee.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                            if (employee == null)
+                            {
+                                employee = _db.Employees.Where(o => o.ID == input.Employee.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                if (employee != null)
+                                {
+                                    if (!employee.IsSA)
+                                    {
+                                        var role = _db.Roles.Where(o => o.ID == input.Employee.RoleID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                        if (role != null)
+                                            employee.RoleID = role.ID;
+                                        else
+                                        {
+                                            response.Message = "Vui lòng chọn phần quyền cho nhân viên.";
+                                            Log.Logger.Info("Response" + methodName, response);
+                                            return response;
+                                        }
+                                    }
+
+                                    if (!string.IsNullOrEmpty(input.Employee.Name) && !string.IsNullOrEmpty(input.Employee.Email))
+                                    {
+                                        employee.ImageUrl = input.Employee.ImageUrl;
+                                        employee.Name = input.Employee.Name;
+                                        employee.Email = email;
+                                        employee.Phone = input.Employee.Phone;
+                                        employee.Address = input.Employee.Address;
+                                        employee.Birthday = input.Employee.Birthday ?? Constants.MinDate;
+                                        employee.HiredDate = input.Employee.HiredDate ?? Constants.MinDate;
+                                        employee.IsActive = input.Employee.IsActive;
+
+                                        if (_db.SaveChanges() > 0)
+                                            response.Success = true;
+                                        else
+                                            response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin nhân viên.";
+                                    }
+                                    else
+                                        response.Message = "Vui lòng kiểm tra lại tên hoặc thư điện tử của nhân viên.";
+                                }
+                                else
+                                    response.Message = "Không tìm thấy nhân viên được chọn.";
+                            }
+                            else
+                                response.Message = "Thư điện tử này đã tồn tại. Vui lòng chọn thư điện tử khác.";
+                        }
                     }
                     else
                         response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thêm mới nhân viên.";
-                }
-            }
-            catch (Exception ex) { Log.Logger.Error("Error" + methodName, ex); }
-            Log.Logger.Info("Response" + methodName, response);
-            return response;
-        }
-
-        public UpdateEmployeeResponse UpdateEmployee(UpdateEmployeeRequest input)
-        {
-            string methodName = MethodBase.GetCurrentMethod().Name;
-            Log.Logger.Info(methodName, input);
-            UpdateEmployeeResponse response = new UpdateEmployeeResponse();
-            try
-            {
-                using (var _db = new CfDb())
-                {
-                    if (input.Employee != null)
-                    {
-                        var employee = _db.Employees.Where(o => o.ID == input.Employee.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                        if (employee != null)
-                        {
-                            if (!employee.IsSA)
-                            {
-                                var role = _db.Roles.Where(o => o.ID == input.Employee.RoleID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                                if (role != null)
-                                    employee.RoleID = role.ID;
-                                else
-                                {
-                                    response.Message = "Vui lòng chọn phần quyền cho nhân viên.";
-                                    Log.Logger.Info("Response" + methodName, response);
-                                    return response;
-                                }
-                            }
-
-                            if (!string.IsNullOrEmpty(input.Employee.Name) && !string.IsNullOrEmpty(input.Employee.Email))
-                            {
-                                employee.ImageUrl = input.Employee.ImageUrl;
-                                employee.Name = input.Employee.Name;
-                                employee.Email = input.Employee.Email.ToLower().Trim();
-                                employee.Phone = input.Employee.Phone;
-                                employee.Address = input.Employee.Address;
-                                employee.Birthday = input.Employee.Birthday ?? Constants.MinDate;
-                                employee.HiredDate = input.Employee.HiredDate ?? Constants.MinDate;
-                                employee.IsActive = input.Employee.IsActive;
-
-                                if (_db.SaveChanges() > 0)
-                                    response.Success = true;
-                                else
-                                    response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin nhân viên.";
-                            }
-                            else
-                                response.Message = "Vui lòng kiểm tra lại tên hoặc thư điện tử của nhân viên.";
-                        }
-                        else
-                            response.Message = "Không tìm thấy nhân viên được chọn.";
-                    }
-                    else
-                        response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin nhân viên.";
                 }
             }
             catch (Exception ex) { Log.Logger.Error("Error" + methodName, ex); }

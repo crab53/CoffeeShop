@@ -20,10 +20,14 @@ namespace CF.Data.Entities
         [Required]
         [StringLength(100)]
         public string Name { get; set; }
-        
+
+        public string NameStr { get; set; }
+
         public bool IsActive { get; set; }
 
         public string Description { get; set; }
+
+        public string Permissions { get; set; }
 
         public bool IsDelete { get; set; }
     }

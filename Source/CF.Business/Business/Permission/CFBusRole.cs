@@ -1,6 +1,12 @@
-﻿using System;
+﻿using CF.Business.Common;
+using CF.Data.Context;
+using CF.Data.Entities;
+using CF.DTO.Permission;
+using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,30 +27,34 @@ namespace CF.Business.Business.Permission
             }
         }
 
-        public GetListZoneResponse GetListZone(GetListZoneRequest input)
+        public GetListRoleResponse GetListRole(GetListRoleRequest input)
         {
             string methodName = MethodBase.GetCurrentMethod().Name;
             Log.Logger.Info(methodName, input);
-            GetListZoneResponse response = new GetListZoneResponse();
+            GetListRoleResponse response = new GetListRoleResponse();
             try
             {
                 using (var _db = new CfDb())
                 {
-                    var query = _db.Zones.Where(o => o.StoreID == input.StoreID && !o.IsDelete);
+                    var query = _db.Roles.Where(o => o.StoreID == input.StoreID && !o.IsDelete);
 
                     if (input.IsShowActive)
                         query = query.Where(o => o.IsActive);
 
-                    response.ListZone = query.OrderBy(o => o.Name).Skip(input.PageIndex * input.PageSize).Take(input.PageSize)
-                        .Select(o => new ZoneDTO()
+                    var listRole = query.OrderBy(o => o.Name).ToList();
+                    foreach (var role in listRole)
+                    {
+                        RoleDTO dto = new RoleDTO()
                         {
-                            ID = o.ID,
-                            Name = o.Name,
-                            Description = o.Description,
-                            Height = o.Height,
-                            Width = o.Width,
-                            IsActive = o.IsActive,
-                        }).ToList();
+                            ID = role.ID,
+                            Name = role.Name,
+                            Description = role.Description,
+                            IsActive = role.IsActive,
+                            ListPermission = GetPermissions(role.Permissions),
+                        };
+                        response.ListRole.Add(dto);
+                    }
+
                     response.Success = true;
                 }
             }
@@ -53,81 +63,31 @@ namespace CF.Business.Business.Permission
             return response;
         }
 
-        public GetZoneInfoResponse GetZoneInfo(GetZoneInfoRequest input)
+        public GetRoleInfoResponse GetRoleInfo(GetRoleInfoRequest input)
         {
             string methodName = MethodBase.GetCurrentMethod().Name;
             Log.Logger.Info(methodName, input);
-            GetZoneInfoResponse response = new GetZoneInfoResponse();
+            GetRoleInfoResponse response = new GetRoleInfoResponse();
             try
             {
                 using (var _db = new CfDb())
                 {
-                    response.Zone = _db.Zones.Where(o => o.ID == input.ID && o.StoreID == input.StoreID && !o.IsDelete)
-                        .Select(o => new ZoneDTO()
-                        {
-                            ID = o.ID,
-                            Name = o.Name,
-                            Description = o.Description,
-                            Height = o.Height,
-                            Width = o.Width,
-                            IsActive = o.IsActive,
-                        }).FirstOrDefault();
-
-                    if (response.Zone != null)
-                        response.Success = true;
-                    else
-                        response.Message = "Không tìm thấy khu vực này.";
-                }
-            }
-            catch (Exception ex) { Log.Logger.Error("Error" + methodName, ex); }
-            Log.Logger.Info("Response" + methodName, response);
-            return response;
-        }
-
-        public CreateZoneResponse CreateZone(CreateZoneRequest input)
-        {
-            string methodName = MethodBase.GetCurrentMethod().Name;
-            Log.Logger.Info(methodName, input);
-            CreateZoneResponse response = new CreateZoneResponse();
-            try
-            {
-                using (var _db = new CfDb())
-                {
-                    if (input.Zone != null)
+                    var role = _db.Roles.Where(o => o.ID == input.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                    if (role != null)
                     {
-                        if (!string.IsNullOrEmpty(input.Zone.Name))
+                        response.Role = new RoleDTO()
                         {
-                            string nameStr = CommonFunction.RemoveSign4VietnameseString(input.Zone.Name);
-                            var zone = _db.Zones.Where(o => o.NameStr == nameStr && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                            if (zone == null)
-                            {
-                                zone = new Zone()
-                                {
-                                    ID = Guid.NewGuid().ToString(),
-                                    StoreID = input.StoreID,
-                                    Name = input.Zone.Name,
-                                    NameStr = nameStr,
-                                    Description = input.Zone.Description,
-                                    Height = input.Zone.Height,
-                                    Width = input.Zone.Width,
-                                    IsActive = input.Zone.IsActive,
-                                    IsDelete = false,
-                                };
-                                _db.Zones.Add(zone);
+                            ID = role.ID,
+                            Name = role.Name,
+                            Description = role.Description,
+                            IsActive = role.IsActive,
+                            ListPermission = GetPermissions(role.Permissions),
+                        };
 
-                                if (_db.SaveChanges() > 0)
-                                    response.Success = true;
-                                else
-                                    response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thêm mới khu vực.";
-                            }
-                            else
-                                response.Message = "Tên khu vực này đã tồn tại. Vui lòng chọn tên khác.";
-                        }
-                        else
-                            response.Message = "Vui lòng nhập tên khu vực.";
+                        response.Success = true;
                     }
                     else
-                        response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thêm mới khu vực.";
+                        response.Message = "Không tìm thấy phân quyền này.";
                 }
             }
             catch (Exception ex) { Log.Logger.Error("Error" + methodName, ex); }
@@ -135,57 +95,77 @@ namespace CF.Business.Business.Permission
             return response;
         }
 
-        public UpdateZoneResponse UpdateZone(UpdateZoneRequest input)
+        public CreateOrUpdateRoleResponse CreateOrUpdateRole(CreateOrUpdateRoleRequest input)
         {
             string methodName = MethodBase.GetCurrentMethod().Name;
             Log.Logger.Info(methodName, input);
-            UpdateZoneResponse response = new UpdateZoneResponse();
+            CreateOrUpdateRoleResponse response = new CreateOrUpdateRoleResponse();
             try
             {
                 using (var _db = new CfDb())
                 {
-                    if (input.Zone != null)
+                    if (input.Role != null)
                     {
-                        if (!string.IsNullOrEmpty(input.Zone.Name))
+                        if (!string.IsNullOrEmpty(input.Role.Name))
                         {
-                            string nameStr = CommonFunction.RemoveSign4VietnameseString(input.Zone.Name);
-                            var zone = _db.Zones.Where(o => o.NameStr == nameStr && o.ID != input.Zone.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                            if (zone == null)
+                            string nameStr = CommonFunction.RemoveSign4VietnameseString(input.Role.Name).Replace(" ", "");
+                            if (string.IsNullOrEmpty(input.Role.ID))
                             {
-                                zone = _db.Zones.Where(o => o.ID == input.Zone.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                                if (zone != null)
+                                var role = _db.Roles.Where(o => o.NameStr == nameStr && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                if (role == null)
                                 {
-                                    var maxPosion = _db.Tables.Where(o => o.StoreID == input.StoreID && o.ZoneID == input.Zone.ID && !o.IsDelete)
-                                        .Select(o => new { x = o.XPoint - 1, y = o.YPoint - 1 }).GroupBy(o => o)
-                                        .Select(o => new { maxX = o.Max(u => u.x), maxY = o.Max(u => u.y) }).FirstOrDefault();
-                                    if (input.Zone.Width >= maxPosion.maxX && input.Zone.Height >= maxPosion.maxY)
+                                    role = new Role()
                                     {
-                                        zone.Name = input.Zone.Name;
-                                        zone.NameStr = nameStr;
-                                        zone.Description = input.Zone.Description;
-                                        zone.Height = input.Zone.Height;
-                                        zone.Width = input.Zone.Width;
-                                        zone.IsActive = input.Zone.IsActive;
+                                        ID = Guid.NewGuid().ToString(),
+                                        StoreID = input.StoreID,
+                                        Name = input.Role.Name,
+                                        NameStr = nameStr,
+                                        Description = input.Role.Description,
+                                        IsActive = input.Role.IsActive,
+                                        Permissions = JsonConvert.SerializeObject(input.Role.ListPermission),
+                                        IsDelete = false,
+                                    };
+                                    _db.Roles.Add(role);
+
+                                    if (_db.SaveChanges() > 0)
+                                        response.Success = true;
+                                    else
+                                        response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thêm mới phân quyền.";
+                                }
+                                else
+                                    response.Message = "Tên phân quyền này đã tồn tại. Vui lòng chọn tên khác.";
+                            }
+                            else
+                            {
+                                var role = _db.Roles.Where(o => o.NameStr == nameStr && o.ID != input.Role.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                if (role == null)
+                                {
+                                    role = _db.Roles.Where(o => o.ID == input.Role.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                    if (role != null)
+                                    {
+                                        role.Name = input.Role.Name;
+                                        role.NameStr = nameStr;
+                                        role.Description = input.Role.Description;
+                                        role.IsActive = input.Role.IsActive;
+                                        role.Permissions = JsonConvert.SerializeObject(input.Role.ListPermission);
 
                                         if (_db.SaveChanges() > 0)
                                             response.Success = true;
                                         else
-                                            response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin khu vực.";
+                                            response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin phân quyền.";
                                     }
                                     else
-                                        response.Message = "Bạn không thể thay đởi kích thước khu vực. Vui lòng xem lại vị trí cái bàn trong khu vực.";
+                                        response.Message = "Không tìm thấy phân quyền được chọn.";
                                 }
                                 else
-                                    response.Message = "Không tìm thấy khu vực được chọn.";
+                                    response.Message = "Tên phân quyền này đã tồn tại. Vui lòng chọn tên khác.";
                             }
-                            else
-                                response.Message = "Tên khu vực này đã tồn tại. Vui lòng chọn tên khác.";
                         }
                         else
-                            response.Message = "Vui lòng nhập tên khu vực.";
+                            response.Message = "Vui lòng nhập tên phân quyền.";
                     }
                     else
-                        response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin khu vực.";
+                        response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thêm mới phân quyền.";
                 }
             }
             catch (Exception ex) { Log.Logger.Error("Error" + methodName, ex); }
@@ -193,32 +173,73 @@ namespace CF.Business.Business.Permission
             return response;
         }
 
-        public DeleteZoneResponse DeleteZone(DeleteZoneRequest input)
+        public DeleteRoleResponse DeleteRole(DeleteRoleRequest input)
         {
             string methodName = MethodBase.GetCurrentMethod().Name;
             Log.Logger.Info(methodName, input);
-            DeleteZoneResponse response = new DeleteZoneResponse();
+            DeleteRoleResponse response = new DeleteRoleResponse();
             try
             {
                 using (var _db = new CfDb())
                 {
-                    var zone = _db.Zones.Where(o => o.ID == input.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                    if (zone != null)
+                    var role = _db.Roles.Where(o => o.ID == input.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                    if (role != null)
                     {
-                        zone.IsDelete = true;
+                        role.IsDelete = true;
 
                         if (_db.SaveChanges() > 0)
                             response.Success = true;
                         else
-                            response.Message = "Đã có lỗi xảy ra. Tạm thời không thể xoá khu vực.";
+                            response.Message = "Đã có lỗi xảy ra. Tạm thời không thể xoá phân quyền.";
                     }
                     else
-                        response.Message = "Không tìm thấy khu vực được chọn.";
+                        response.Message = "Không tìm thấy phân quyền được chọn.";
                 }
             }
             catch (Exception ex) { Log.Logger.Error("Error" + methodName, ex); }
             Log.Logger.Info("Response" + methodName, response);
             return response;
+        }
+
+        public List<PermissionDTO> GetPermissions(string json)
+        {
+            string methodName = MethodBase.GetCurrentMethod().Name;
+            Log.Logger.Info(methodName, json);
+            List<PermissionDTO> permissions = new List<PermissionDTO>();
+            try
+            {
+                using (var _db = new CfDb())
+                {
+                    if (!string.IsNullOrEmpty(json))
+                    {
+                        var listPermission = JsonConvert.DeserializeObject<List<PermissionDTO>>(json);
+                        var listModule = _db.Modules.Where(o => o.IsActive).ToList();
+
+                        permissions = listModule.GroupJoin(listPermission, m => m.Code, p => p.Code, (m, p) => new { m, p = p.FirstOrDefault() })
+                            .Select(o => new PermissionDTO()
+                            {
+                                Code = o.m.Code,
+                                Name = o.m.Name,
+                                IsAction = o.p != null ? o.p.IsAction : false,
+                                IsView = o.p != null ? o.p.IsView : false,
+                            }).OrderBy(o => o.Code).ToList();
+                    }
+                    else
+                    {
+                        permissions = _db.Modules.Where(o => o.IsActive)
+                            .Select(o => new PermissionDTO()
+                            {
+                                Code = o.Code,
+                                Name = o.Name,
+                                IsAction = false,
+                                IsView = false,
+                            }).ToList();
+                    }
+                }
+            }
+            catch (Exception ex) { Log.Logger.Error("Error" + methodName, ex); }
+            Log.Logger.Info("Response" + methodName, permissions);
+            return permissions;
         }
     }
 }

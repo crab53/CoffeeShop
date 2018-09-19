@@ -15,6 +15,14 @@ namespace CF.DTO.Permission
         public List<PermissionDTO> ListPermission { get; set; }
     }
 
+    public class PermissionDTO
+    {
+        public int Code { get; set; }
+        public string Name { get; set; }
+        public bool IsAction { get; set; }
+        public bool IsView { get; set; }
+    }
+
     #region Request
 
     public class GetListRoleRequest : RequestBase
@@ -24,12 +32,7 @@ namespace CF.DTO.Permission
 
     public class GetRoleInfoRequest : RequestBase { }
 
-    public class CreateRoleRequest : RequestBase
-    {
-        public RoleDTO Role { get; set; }
-    }
-
-    public class UpdateRoleRequest : RequestBase
+    public class CreateOrUpdateRoleRequest : RequestBase
     {
         public RoleDTO Role { get; set; }
     }
@@ -55,9 +58,7 @@ namespace CF.DTO.Permission
         public RoleDTO Role { get; set; }
     }
 
-    public class CreateRoleResponse : ResponseBase { }
-
-    public class UpdateRoleResponse : ResponseBase { }
+    public class CreateOrUpdateRoleResponse : ResponseBase { }
 
     public class DeleteRoleResponse : ResponseBase { }
 

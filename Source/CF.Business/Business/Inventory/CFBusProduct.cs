@@ -102,11 +102,11 @@ namespace CF.Business.Business.Inventory
             return response;
         }
 
-        public CreateProductResponse CreateProduct(CreateProductRequest input)
+        public CreateOrUpdateProductResponse CreateOrUpdateProduct(CreateOrUpdateProductRequest input)
         {
             string methodName = MethodBase.GetCurrentMethod().Name;
             Log.Logger.Info(methodName, input);
-            CreateProductResponse response = new CreateProductResponse();
+            CreateOrUpdateProductResponse response = new CreateOrUpdateProductResponse();
             try
             {
                 using (var _db = new CfDb())
@@ -119,33 +119,63 @@ namespace CF.Business.Business.Inventory
                             if (!string.IsNullOrEmpty(input.Product.Name))
                             {
                                 string nameStr = CommonFunction.RemoveSign4VietnameseString(input.Product.Name);
-                                var product = _db.Products.Where(o => o.NameStr == nameStr && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                                if (product == null)
+                                if (string.IsNullOrEmpty(input.Product.ID))
                                 {
-                                    product = new Product()
+                                    var product = _db.Products.Where(o => o.NameStr == nameStr && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                    if (product == null)
                                     {
-                                        ID = Guid.NewGuid().ToString(),
-                                        StoreID = input.StoreID,
-                                        CategoryID = cate.ID,
-                                        ImageUrl = input.Product.ImageUrl,
-                                        Name = input.Product.Name,
-                                        NameStr = nameStr,
-                                        Price = input.Product.Price,
-                                        Description = input.Product.Description,
-                                        ProductType = input.Product.ProductType,
-                                        IsActive = input.Product.IsActive,
-                                        NumberOfOrder = 0,
-                                        IsDelete = false,
-                                    };
-                                    _db.Products.Add(product);
+                                        product = new Product()
+                                        {
+                                            ID = Guid.NewGuid().ToString(),
+                                            StoreID = input.StoreID,
+                                            CategoryID = cate.ID,
+                                            ImageUrl = input.Product.ImageUrl,
+                                            Name = input.Product.Name,
+                                            NameStr = nameStr,
+                                            Price = input.Product.Price,
+                                            Description = input.Product.Description,
+                                            ProductType = input.Product.ProductType,
+                                            IsActive = input.Product.IsActive,
+                                            NumberOfOrder = 0,
+                                            IsDelete = false,
+                                        };
+                                        _db.Products.Add(product);
 
-                                    if (_db.SaveChanges() > 0)
-                                        response.Success = true;
+                                        if (_db.SaveChanges() > 0)
+                                            response.Success = true;
+                                        else
+                                            response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thêm mới sản phẩm.";
+                                    }
                                     else
-                                        response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thêm mới sản phẩm.";
+                                        response.Message = "Tên sản phẩm này đã tồn tại. Vui lòng chọn tên khác.";
                                 }
                                 else
-                                    response.Message = "Tên sản phẩm này đã tồn tại. Vui lòng chọn tên khác.";
+                                {
+                                    var product = _db.Products.Where(o => o.NameStr == nameStr && o.ID != input.Product.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                    if (product == null)
+                                    {
+                                        product = _db.Products.Where(o => o.ID == input.Product.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                        if (product != null)
+                                        {
+                                            product.CategoryID = cate.ID;
+                                            product.ImageUrl = input.Product.ImageUrl;
+                                            product.Name = input.Product.Name;
+                                            product.NameStr = nameStr;
+                                            product.Price = input.Product.Price;
+                                            product.Description = input.Product.Description;
+                                            product.IsActive = input.Product.IsActive;
+
+                                            if (_db.SaveChanges() > 0)
+                                                response.Success = true;
+                                            else
+                                                response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin sản phẩm.";
+                                        }
+                                        else
+                                            response.Message = "Không tìm thấy sản phẩm được chọn.";
+                                    }
+                                    else
+                                        response.Message = "Tên sản phẩm này đã tồn tại. Vui lòng chọn tên khác.";
+                                }
                             }
                             else
                                 response.Message = "Vui lòng nhập tên sản phẩm.";
@@ -161,64 +191,7 @@ namespace CF.Business.Business.Inventory
             Log.Logger.Info("Response" + methodName, response);
             return response;
         }
-
-        public UpdateProductResponse UpdateProduct(UpdateProductRequest input)
-        {
-            string methodName = MethodBase.GetCurrentMethod().Name;
-            Log.Logger.Info(methodName, input);
-            UpdateProductResponse response = new UpdateProductResponse();
-            try
-            {
-                using (var _db = new CfDb())
-                {
-                    if (input.Product != null)
-                    {
-                        var cate = _db.Categories.Where(o => o.StoreID == input.StoreID && !o.IsDelete && o.ID == input.Product.CategoryID).FirstOrDefault();
-                        if (cate != null)
-                        {
-                            if (!string.IsNullOrEmpty(input.Product.Name))
-                            {
-                                string nameStr = CommonFunction.RemoveSign4VietnameseString(input.Product.Name);
-                                var product = _db.Products.Where(o => o.NameStr == nameStr && o.ID != input.Product.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                                if (product == null)
-                                {
-                                    product = _db.Products.Where(o => o.ID == input.Product.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                                    if (product != null)
-                                    {
-                                        product.CategoryID = cate.ID;
-                                        product.ImageUrl = input.Product.ImageUrl;
-                                        product.Name = input.Product.Name;
-                                        product.NameStr = nameStr;
-                                        product.Price = input.Product.Price;
-                                        product.Description = input.Product.Description;
-                                        product.IsActive = input.Product.IsActive;
-
-                                        if (_db.SaveChanges() > 0)
-                                            response.Success = true;
-                                        else
-                                            response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin sản phẩm.";
-                                    }
-                                    else
-                                        response.Message = "Không tìm thấy sản phẩm được chọn.";
-                                }
-                                else
-                                    response.Message = "Tên sản phẩm này đã tồn tại. Vui lòng chọn tên khác.";
-                            }
-                            else
-                                response.Message = "Vui lòng nhập tên sản phẩm.";
-                        }
-                        else
-                            response.Message = "Vui lòng kiểm tra lại danh mục sản phẩm.";
-                    }
-                    else
-                        response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin sản phẩm.";
-                }
-            }
-            catch (Exception ex) { Log.Logger.Error("Error" + methodName, ex); }
-            Log.Logger.Info("Response" + methodName, response);
-            return response;
-        }
-
+        
         public DeleteProductResponse DeleteProduct(DeleteProductRequest input)
         {
             string methodName = MethodBase.GetCurrentMethod().Name;

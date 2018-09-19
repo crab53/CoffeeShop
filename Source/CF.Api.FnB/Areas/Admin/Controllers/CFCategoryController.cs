@@ -83,14 +83,14 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
             {
                 /* request */
                 Model.PictureUpload = System.Web.HttpContext.Current.Request.Files["UploadedImage"];
-                var request = new CreateCategoryRequest
+                var request = new CreateOrUpdateCategoryRequest
                 {
                     Category = Model,
                     StoreID = "123StoreID",
                 };
                 
                 /* call bus */
-                var response = CFBusCategory.Instance.CreateCategory(request);
+                var response = CFBusCategory.Instance.CreateOrUpdateCategory(request);
 
                 /* response */
                 if (response.Success)

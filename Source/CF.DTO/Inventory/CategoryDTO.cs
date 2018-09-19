@@ -32,16 +32,11 @@ namespace CF.DTO.Inventory
 
     public class GetCategoryInfoRequest : RequestBase { }
 
-    public class CreateCategoryRequest : RequestBase
+    public class CreateOrUpdateCategoryRequest : RequestBase
     {
         public CategoryDTO Category { get; set; }
     }
-
-    public class UpdateCategoryRequest : RequestBase
-    {
-        public CategoryDTO Category { get; set; }
-    }
-
+    
     public class DeleteCategoryRequest : RequestBase { }
 
     #endregion Request
@@ -63,10 +58,8 @@ namespace CF.DTO.Inventory
         public CategoryDTO Category { get; set; }
     }
 
-    public class CreateCategoryResponse : ResponseBase { }
-
-    public class UpdateCategoryResponse : ResponseBase { }
-
+    public class CreateOrUpdateCategoryResponse : ResponseBase { }
+    
     public class DeleteCategoryResponse : ResponseBase { }
 
     #endregion Response

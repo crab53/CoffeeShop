@@ -47,7 +47,7 @@ namespace CF.Business.Business.Inventory
                             Name = o.Name,
                             Description = o.Description,
                             IsActive = o.IsActive,
-                            ImageUrl = string.IsNullOrEmpty(o.ImageUrl)?"": Constants._PublicImages+o.ImageUrl,
+                            ImageUrl = string.IsNullOrEmpty(o.ImageUrl) ? "" : Constants._PublicImages + o.ImageUrl,
                         }).ToList();
                     response.Success = true;
                 }
@@ -87,11 +87,11 @@ namespace CF.Business.Business.Inventory
             return response;
         }
 
-        public CreateCategoryResponse CreateCategory(CreateCategoryRequest input)
+        public CreateOrUpdateCategoryResponse CreateOrUpdateCategory(CreateOrUpdateCategoryRequest input)
         {
             string methodName = MethodBase.GetCurrentMethod().Name;
             Log.Logger.Info(methodName, input);
-            CreateCategoryResponse response = new CreateCategoryResponse();
+            CreateOrUpdateCategoryResponse response = new CreateOrUpdateCategoryResponse();
             try
             {
                 using (var _db = new CfDb())
@@ -101,84 +101,63 @@ namespace CF.Business.Business.Inventory
                         if (!string.IsNullOrEmpty(input.Category.Name))
                         {
                             string nameStr = CommonFunction.RemoveSign4VietnameseString(input.Category.Name);
-                            var category = _db.Categories.Where(o => o.NameStr == nameStr && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                            if (category == null)
+                            if (string.IsNullOrEmpty(input.Category.ID))
                             {
-                                category = new Category()
+                                var category = _db.Categories.Where(o => o.NameStr == nameStr && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                if (category == null)
                                 {
-                                    ID = Guid.NewGuid().ToString(),
-                                    StoreID = input.StoreID,
-                                    ImageUrl = input.Category.ImageUrl,
-                                    Name = input.Category.Name,
-                                    NameStr = nameStr,
-                                    Description = input.Category.Description,
-                                    IsActive = input.Category.IsActive,
-                                    IsDelete = false,
-                                };
-                                _db.Categories.Add(category);
+                                    category = new Category()
+                                    {
+                                        ID = Guid.NewGuid().ToString(),
+                                        StoreID = input.StoreID,
+                                        ImageUrl = input.Category.ImageUrl,
+                                        Name = input.Category.Name,
+                                        NameStr = nameStr,
+                                        Description = input.Category.Description,
+                                        IsActive = input.Category.IsActive,
+                                        IsDelete = false,
+                                    };
+                                    _db.Categories.Add(category);
 
-                                if (_db.SaveChanges() > 0)
-                                    response.Success = true;
+                                    if (_db.SaveChanges() > 0)
+                                        response.Success = true;
+                                    else
+                                        response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thêm mới danh mục.";
+                                }
                                 else
-                                    response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thêm mới danh mục.";
+                                    response.Message = "Tên danh mục này đã tồn tại. Vui lòng chọn tên khác.";
                             }
                             else
-                                response.Message = "Tên danh mục này đã tồn tại. Vui lòng chọn tên khác.";
+                            {
+                                var category = _db.Categories.Where(o => o.NameStr == nameStr && o.ID != input.Category.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                if (category == null)
+                                {
+                                    category = _db.Categories.Where(o => o.ID == input.Category.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
+                                    if (category != null)
+                                    {
+                                        category.ImageUrl = input.Category.ImageUrl;
+                                        category.Name = input.Category.Name;
+                                        category.NameStr = nameStr;
+                                        category.Description = input.Category.Description;
+                                        category.IsActive = input.Category.IsActive;
+
+                                        if (_db.SaveChanges() > 0)
+                                            response.Success = true;
+                                        else
+                                            response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin danh mục.";
+                                    }
+                                    else
+                                        response.Message = "Không tìm thấy danh mục được chọn.";
+                                }
+                                else
+                                    response.Message = "Tên danh mục này đã tồn tại. Vui lòng chọn tên khác.";
+                            }
                         }
                         else
                             response.Message = "Vui lòng nhập tên danh mục.";
                     }
                     else
                         response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thêm mới danh mục.";
-                }
-            }
-            catch (Exception ex) { Log.Logger.Error("Error" + methodName, ex); }
-            Log.Logger.Info("Response" + methodName, response);
-            return response;
-        }
-
-        public UpdateCategoryResponse UpdateCategory(UpdateCategoryRequest input)
-        {
-            string methodName = MethodBase.GetCurrentMethod().Name;
-            Log.Logger.Info(methodName, input);
-            UpdateCategoryResponse response = new UpdateCategoryResponse();
-            try
-            {
-                using (var _db = new CfDb())
-                {
-                    if (input.Category != null)
-                    {
-                        if (!string.IsNullOrEmpty(input.Category.Name))
-                        {
-                            string nameStr = CommonFunction.RemoveSign4VietnameseString(input.Category.Name);
-                            var category = _db.Categories.Where(o => o.NameStr == nameStr && o.ID != input.Category.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                            if (category == null)
-                            {
-                                category = _db.Categories.Where(o => o.ID == input.Category.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
-                                if (category != null)
-                                {
-                                    category.ImageUrl = input.Category.ImageUrl;
-                                    category.Name = input.Category.Name;
-                                    category.NameStr = nameStr;
-                                    category.Description = input.Category.Description;
-                                    category.IsActive = input.Category.IsActive;
-
-                                    if (_db.SaveChanges() > 0)
-                                        response.Success = true;
-                                    else
-                                        response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin danh mục.";
-                                }
-                                else
-                                    response.Message = "Không tìm thấy danh mục được chọn.";
-                            }
-                            else
-                                response.Message = "Tên danh mục này đã tồn tại. Vui lòng chọn tên khác.";
-                        }
-                        else
-                            response.Message = "Vui lòng nhập tên danh mục.";
-                    }
-                    else
-                        response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin danh mục.";
                 }
             }
             catch (Exception ex) { Log.Logger.Error("Error" + methodName, ex); }

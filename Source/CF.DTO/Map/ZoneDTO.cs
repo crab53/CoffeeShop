@@ -25,16 +25,11 @@ namespace CF.DTO.Map
 
     public class GetZoneInfoRequest : RequestBase { }
 
-    public class CreateZoneRequest : RequestBase
+    public class CreateOrUpdateZoneRequest : RequestBase
     {
         public ZoneDTO Zone { get; set; }
     }
-
-    public class UpdateZoneRequest : RequestBase
-    {
-        public ZoneDTO Zone { get; set; }
-    }
-
+    
     public class DeleteZoneRequest : RequestBase { }
 
     #endregion Request
@@ -56,10 +51,8 @@ namespace CF.DTO.Map
         public ZoneDTO Zone { get; set; }
     }
 
-    public class CreateZoneResponse : ResponseBase { }
-
-    public class UpdateZoneResponse : ResponseBase { }
-
+    public class CreateOrUpdateZoneResponse : ResponseBase { }
+    
     public class DeleteZoneResponse : ResponseBase { }
 
     #endregion Response

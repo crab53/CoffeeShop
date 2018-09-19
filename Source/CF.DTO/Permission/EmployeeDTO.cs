@@ -30,16 +30,11 @@ namespace CF.DTO.Permission
 
     public class GetEmployeeInfoRequest : RequestBase { }
 
-    public class CreateEmployeeRequest : RequestBase
+    public class CreateOrUpdateEmployeeRequest : RequestBase
     {
         public EmployeeDTO Employee { get; set; }
     }
-
-    public class UpdateEmployeeRequest : RequestBase
-    {
-        public EmployeeDTO Employee { get; set; }
-    }
-
+    
     public class DeleteEmployeeRequest : RequestBase { }
 
     #endregion Request
@@ -61,10 +56,8 @@ namespace CF.DTO.Permission
         public EmployeeDTO Employee { get; set; }
     }
 
-    public class CreateEmployeeResponse : ResponseBase { }
-
-    public class UpdateEmployeeResponse : ResponseBase { }
-
+    public class CreateOrUpdateEmployeeResponse : ResponseBase { }
+    
     public class DeleteEmployeeResponse : ResponseBase { }
 
     #endregion Response
