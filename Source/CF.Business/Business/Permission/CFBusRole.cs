@@ -147,7 +147,24 @@ namespace CF.Business.Business.Permission
                                         role.NameStr = nameStr;
                                         role.Description = input.Role.Description;
                                         role.IsActive = input.Role.IsActive;
-                                        role.Permissions = JsonConvert.SerializeObject(input.Role.ListPermission);
+
+                                        var listPermission = JsonConvert.DeserializeObject<List<PermissionDTO>>(role.Permissions);
+                                        foreach (var item in input.Role.ListPermission)
+                                        {
+                                            var permission = listPermission.Where(o => o.Code == item.Code).FirstOrDefault();
+                                            if (permission != null)
+                                            {
+                                                int index = listPermission.IndexOf(permission);
+                                                if(index != -1)
+                                                {
+                                                    listPermission[index].IsAction = item.IsAction;
+                                                    listPermission[index].IsView = item.IsView;
+                                                }
+                                            }
+                                            else
+                                                listPermission.Add(item);
+                                        }
+                                        role.Permissions = JsonConvert.SerializeObject(listPermission);
 
                                         if (_db.SaveChanges() > 0)
                                             response.Success = true;
