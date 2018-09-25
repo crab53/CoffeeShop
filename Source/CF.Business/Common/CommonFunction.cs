@@ -2,10 +2,13 @@
 using CF.Data.Context;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading;
+using System.Web;
 
 namespace CF.Business.Common
 {
@@ -65,6 +68,100 @@ namespace CF.Business.Common
             return str.Trim();
         }
 
+        public static string ToBase64String(HttpPostedFile cvFile)
+        {
+            byte[] fileInBytes = new byte[cvFile.ContentLength];
+            using (BinaryReader theReader = new BinaryReader(cvFile.InputStream))
+            {
+                fileInBytes = theReader.ReadBytes(cvFile.ContentLength);
+            }
+            string fileAsString = Convert.ToBase64String(fileInBytes);
+            return fileAsString;
+        }
+
+        public static bool UploadImage(string imageString, ref string fileName)
+        {
+            try
+            {
+                byte[] data = Convert.FromBase64String(imageString);
+                string fileExextension = string.Empty;
+
+                Image image;
+
+                //check image  Exextension
+                using (var stream = new MemoryStream(data, 0, data.Length))
+                {
+                    image = Image.FromStream(stream);
+                    var extension = "";
+                    if (System.Drawing.Imaging.ImageFormat.Jpeg.Equals(image.RawFormat))
+                    {
+                        extension = System.Drawing.Imaging.ImageFormat.Jpeg.ToString().ToLower();
+                    }
+                    else if (System.Drawing.Imaging.ImageFormat.Png.Equals(image.RawFormat))
+                    {
+                        extension = System.Drawing.Imaging.ImageFormat.Png.ToString().ToLower();
+                    }
+                    else if (System.Drawing.Imaging.ImageFormat.Gif.Equals(image.RawFormat))
+                    {
+                        extension = System.Drawing.Imaging.ImageFormat.Gif.ToString().ToLower();
+                    }
+
+                    fileName = Guid.NewGuid().ToString() + "." + extension;
+                }
+
+                // create path save image 
+                string path = System.Web.Hosting.HostingEnvironment.MapPath(Constants._PostImages);
+                if (!Directory.Exists(path))
+                {
+                    Directory.CreateDirectory(path);
+                }
+
+                image.Save(path + fileName);
+                Log.Logger.Info("UploadImage", fileName);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error("UploadImage", ex);
+                return false;
+            }
+        }
+
+        public static string GetFileExtension(string imageString)
+        {
+            try
+            {
+                string ret = "";
+
+                byte[] data = Convert.FromBase64String(imageString);
+                Image image;
+
+                //check image  Exextension
+                using (var stream = new MemoryStream(data, 0, data.Length))
+                {
+                    image = Image.FromStream(stream);
+                    if (System.Drawing.Imaging.ImageFormat.Jpeg.Equals(image.RawFormat))
+                    {
+                        ret = System.Drawing.Imaging.ImageFormat.Jpeg.ToString().ToLower();
+                    }
+                    else if (System.Drawing.Imaging.ImageFormat.Png.Equals(image.RawFormat))
+                    {
+                        ret = System.Drawing.Imaging.ImageFormat.Png.ToString().ToLower();
+                    }
+                    else if (System.Drawing.Imaging.ImageFormat.Gif.Equals(image.RawFormat))
+                    {
+                        ret = System.Drawing.Imaging.ImageFormat.Gif.ToString().ToLower();
+                    }
+                }
+
+                return ret;
+            }
+            catch (Exception ex)
+            {
+                Log.Logger.Error("GetFileExtension", ex);
+                return "";
+            }
+        }
 
     }
 }

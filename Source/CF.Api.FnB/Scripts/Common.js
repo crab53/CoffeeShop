@@ -61,15 +61,13 @@ function CloseDetail() {
     LoadGrid();
 }
 
-
-
 /* ICHECK */
 function init_ICheck() {
     if ($("input.icheck")[0]) {
         $(document).ready(function () {
             $('input.icheck').iCheck({
-                checkboxClass: 'icheckbox_square-grey',
-                radioClass: 'iradio_square-green'
+                checkboxClass: 'icheckbox_flat-green',
+                radioClass: 'iradio_flat-green'
             });
         });
     }
@@ -84,5 +82,6 @@ function SubmitForm(action)
 }
 
 $(document).ready(function () {
-    init_ICheck();
+    //alert("ready");
+    //init_ICheck();
 });

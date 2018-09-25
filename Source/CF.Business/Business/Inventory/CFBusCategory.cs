@@ -101,7 +101,14 @@ namespace CF.Business.Business.Inventory
                         if (!string.IsNullOrEmpty(input.Category.Name))
                         {
                             string nameStr = CommonFunction.RemoveSign4VietnameseString(input.Category.Name);
-                            if (string.IsNullOrEmpty(input.Category.ID))
+                            if (!string.IsNullOrEmpty(input.Category.ImageData))
+                            {
+                                var imageUrl = "";
+                                if (CommonFunction.UploadImage(input.Category.ImageData, ref imageUrl))
+                                    input.Category.ImageUrl = imageUrl;
+                            }
+
+                            if (string.IsNullOrEmpty(input.Category.ID))/* insert */
                             {
                                 var category = _db.Categories.Where(o => o.NameStr == nameStr && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
                                 if (category == null)
@@ -127,7 +134,7 @@ namespace CF.Business.Business.Inventory
                                 else
                                     response.Message = "Tên danh mục này đã tồn tại. Vui lòng chọn tên khác.";
                             }
-                            else
+                            else /* update */
                             {
                                 var category = _db.Categories.Where(o => o.NameStr == nameStr && o.ID != input.Category.ID && o.StoreID == input.StoreID && !o.IsDelete).FirstOrDefault();
                                 if (category == null)

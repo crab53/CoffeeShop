@@ -90,20 +90,19 @@
 <script src="@Url.Content("~/Areas/Admin/js/lib/datatables/cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js")"></script>
 <script src="@Url.Content("~/Areas/Admin/js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js")"></script>
 <script src="@Url.Content("~/Areas/Admin/js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js")"></script>
-<script src="@Url.Content("~/Areas/Admin/js/lib/datatables/datatables-init.js")"></script>
 
 <script>
     $(document).ready(function () {
         $('#tblItem').DataTable({
             dom: 'Bfrtip',
-
             buttons: [
                 'copy', 'csv', 'excel', 'pdf', 'print'
             ],
-            bStateSave: true, // save datatable state(pagination, sort, etc) in cookie.
+
+            bStateSave: false, // save datatable state(pagination, sort, etc) in cookie.
 
             columnDefs: [
-                { "orderable": false, "targets": [2, 4, 5 ] },
+                { "orderable": false, "targets": [2, 4, 5] },
                 { "width": "3%", "targets": [0, 3, 4] },
                 { "width": "10%", "targets": [1, 2] },
                 { "width": "20%", "targets": [5] },

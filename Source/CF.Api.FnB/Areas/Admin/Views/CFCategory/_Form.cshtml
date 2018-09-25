@@ -1,24 +1,36 @@
 ﻿@model CF.DTO.Inventory.CategoryDTO
 
 <style>
-    #parent {
-        display: table;
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
     }
 
-
-    #child {
-        display: table-cell;
-        vertical-align: middle;
+    /*.field-validation-error.label-danger {
+        background-color: #d9534f;
     }
+
+    .label {
+        display: inline;
+        padding: .2em .6em .3em;
+        font-size: 75%;
+        font-weight: 700;
+        line-height: 1;
+        color: #fff;
+        text-align: center;
+        white-space: nowrap;
+        vertical-align: baseline;
+        border-radius: .25em;
+    }*/
 </style>
-
 
 @Html.HiddenFor(model => model.ID)
 @Html.HiddenFor(model => model.ImageUrl)
 <div class="row">
     <div class="col-lg-4" id="parent">
         <div id="child">
-            <div class="form-group">
+            <div class="form-group center">
                 @if (!string.IsNullOrEmpty(Model.ImageUrl))
                 {
                     <img id="upload-preview" src="@Model.ImageUrl" height="100" width="100" class="" style="border-radius:100% !important" />
@@ -29,7 +41,7 @@
                 }
             </div>
 
-            <div class="form-group" style="line-height:55px;">
+            <div class="form-group center" style="line-height:55px;">
                 <div class="upload-btn-wrapper" style="cursor:pointer;">
                     <button class="btn btn-default" type="button" onclick="showPictureUpload();" style="margin-top:-6%;">Chọn hình</button>
                     <input type="file" name="myFile" id="urlImage" class="hidden" onchange="PreviewImage(this,'upload-preview')" accept="*.jpg" />
@@ -42,27 +54,34 @@
 
     <div class="col-lg-8">
         <div class="form-group">
+            <div class="testAjax">
+
+            </div>
             <label>Tên category:</label>
             @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @placeholder = "Tên", @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "text-danger", })
+
         </div>
 
-        <div class="form-group">
-            <label>Trạng thái</label> <label>@Html.CheckBoxFor(model => model.IsActive, new { @class = "icheck" })</label>
-        </div>
 
         <div class="form-group">
             <label>Mô tả </label>
             @Html.TextBoxFor(model => model.Description, new { @class = "form-control currency", @placeholder = "Mô tả", @autocomplete = "off" })
         </div>
 
+        <div class="form-group">
+            <label class="">Trạng thái</label>
+            <label class="">&nbsp; &nbsp; @Html.CheckBoxFor(model => model.IsActive, new { @class = "icheck" })</label>
+        </div>
     </div>
 </div>
 
-
-<script src="@Url.Content("~/Areas/Admin/js/lib/bootstrap/js/bootstrap.min.js")"></script>
+@*<script src="@Url.Content( "~/Scripts/jquery.validate.min.js")"></script>
+<script src="@Url.Content( "~/Scripts/jquery.validate.unobtrusive.min.js")"></script>*@
 
 <script>
     $(document).ready(function () {
+        init_ICheck()
     });
 
     function showPictureUpload() {
@@ -71,18 +90,15 @@
 
     function SubmitForm(action) {
 
-        var name = $('#Name').val();
-        var description = $('#Description').val();
-        var ID = $('#ID').val();
-        var ImageUrl = $('#ImageUrl').val();
+        /* create request  */
         var pictureUpload = $('#urlImage');
 
-        /* create request  */
         var formData = new FormData();
-        formData.append("Name", name);
-        formData.append("Description", description);
-        formData.append("ID", ID);
-        formData.append("ImageUrl", ImageUrl);
+        formData.append("ID", $('#ID').val());
+        formData.append("ImageUrl", $('#ImageUrl').val());
+        formData.append("Name", $('#Name').val());
+        formData.append("Description", $('#Description').val());
+        formData.append("IsActive", $('#IsActive').val());
         if (pictureUpload[0].files.length > 0) {
             formData.append("UploadedImage", pictureUpload[0].files[0]);
         }
@@ -94,13 +110,21 @@
             data: formData,
             contentType: false,
             processData: false,
-            success: function () {
+            dataType: 'html',
+            success: function (data) {
                 $('#modalDetail').modal('hide');
                 LoadGrid();
             },
-            error: function (jqXHR, textStatus, errorThrown) {
-                $(".detail-view").html(jqXHR.responseText);
+            error: function (xhr, httpStatusMessage, customErrorMessage) {
+                if (xhr.status === 400) {
+                    $("#form-detail").html(xhr.responseText);
+                }
+                else {
+                    alert(xhr.statusText);
+                }
+
             }
-        });
+        })
     }
+
 </script>
