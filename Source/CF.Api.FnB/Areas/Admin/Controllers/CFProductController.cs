@@ -46,12 +46,12 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
         public ActionResult Delete(string ID)
         {
             /* request bus */
-            var request = new DeleteCategoryRequest()
+            var request = new DeleteProductRequest()
             {
                 ID = ID,
                 StoreID = "123StoreID"
             };
-            var response = CFBusCategory.Instance.DeleteCategory(request);
+            var response = CFBusProduct.Instance.DeleteProduct(request);
 
             /* response */
             if (response.Success)
