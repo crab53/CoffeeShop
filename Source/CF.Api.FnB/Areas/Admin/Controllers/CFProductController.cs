@@ -45,10 +45,16 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
 
         public ActionResult Delete(string ID)
         {
-            var msg = "";
-            var result = true;
-            //var result = _fac.HidePin(ID, "Admin", ref msg);
-            if (result)
+            /* request bus */
+            var request = new DeleteCategoryRequest()
+            {
+                ID = ID,
+                StoreID = "123StoreID"
+            };
+            var response = CFBusCategory.Instance.DeleteCategory(request);
+
+            /* response */
+            if (response.Success)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.OK);
             }
