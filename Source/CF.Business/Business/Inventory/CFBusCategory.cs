@@ -4,8 +4,10 @@ using CF.Data.Context;
 using CF.Data.Entities;
 using CF.DTO.Inventory;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Web.Mvc;
 
 namespace CF.Business.Business.Inventory
 {
@@ -148,7 +150,7 @@ namespace CF.Business.Business.Inventory
                                         category.Description = input.Category.Description;
                                         category.IsActive = input.Category.IsActive;
 
-                                        if (_db.SaveChanges() > 0)
+                                        if (_db.SaveChanges() >= 0)
                                             response.Success = true;
                                         else
                                             response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin danh mục.";
@@ -198,6 +200,25 @@ namespace CF.Business.Business.Inventory
             catch (Exception ex) { Log.Logger.Error("Error" + methodName, ex); }
             Log.Logger.Info("Response" + methodName, response);
             return response;
+        }
+
+        public List<SelectListItem> GetListCategorySelectItem(string storeId)
+        {
+            var data = new List<SelectListItem>();
+            try
+            {
+                using (var _db = new CfDb())
+                {
+                    data = _db.Categories.Where(o => o.StoreID == storeId && !o.IsDelete && o.IsActive)
+                           .Select(x => new SelectListItem
+                           {
+                               Value = x.ID,
+                               Text = x.Name,
+                           }).ToList();
+                }
+            }
+            catch (Exception ex) { };
+            return data;
         }
     }
 }

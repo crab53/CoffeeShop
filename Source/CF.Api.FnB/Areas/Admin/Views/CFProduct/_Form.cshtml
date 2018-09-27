@@ -1,104 +1,135 @@
 ﻿@model CF.DTO.Inventory.ProductDTO
-
+<style>
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
 
 @Html.HiddenFor(model => model.ID)
 @Html.HiddenFor(model => model.ImageUrl)
 <div class="row">
-    <div class="col-lg-8">
-        <div class="form-group">
-            <label>Catelogies:</label>
-            <select class="form-control">
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-            </select>
+
+    <!--Left -->
+    <div class="col-lg-4">
+        <div class="form-group center">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img id="upload-preview" src="@Model.ImageUrl" height="100" width="100" class="" style="border-radius:100% !important" />
+            }
+            else
+            {
+                <img id="upload-preview" class="" src="@Url.Content("~/Areas/Admin/images/product_1/product_default.jpg")" height="100" width="100" style="border-radius:100% !important" />
+            }
         </div>
+
+        <div class="form-group center" style="line-height:55px;">
+            <div class="upload-btn-wrapper" style="cursor:pointer;">
+                <button class="btn btn-default" type="button" onclick="showPictureUpload();" style="margin-top:-6%;">Chọn hình</button>
+                <input type="file" name="myFile" id="urlImage" class="hidden" onchange="PreviewImage(this,'upload-preview')" accept="*.jpg" />
+            </div>
+        </div>
+    </div>
+
+    <!--Right -->
+    <div class="col-lg-8">
+
+        <div class="form-group">
+            <label>Thể loại </label>
+            <div>
+                @Html.DropDownListFor(model => model.CategoryID,
+                    new SelectList(ViewBag.Category, "Value", "Text", Model.CategoryID), "Vui lòng chọn thể loại",
+                    new
+                    {
+                        @class = "form-control select2_multiple",
+                        @id = "CategoryDdl",
+                        @style = "width:100%;"
+                    })
+                @Html.ValidationMessageFor(model => model.CategoryID, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
         <div class="form-group">
             <label>Product Name:</label>
             @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @placeholder = "Product Name", @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Name, null, new { @class = "text-danger", })
         </div>
 
         <div class="form-group">
             <label>Giá: </label>
             @Html.TextBoxFor(model => model.Price, new { @class = "form-control currency", @placeholder = "Giá sản phẩm", @autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.Price, null, new { @class = "text-danger", })
         </div>
 
-    </div>
-    <div class="col-lg-4">
         <div class="form-group">
-            <label class="control-label col-md-2 col-sm-2 col-xs-12 lineHeight fontLighter">Picture</label>
-            <div class="col-md-2 col-sm-2 col-xs-12">
-                @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                {
-                    <img id="upload-preview" src="@Model.ImageUrl" height="100" width="100" class="" style="border-radius:100% !important" />
-                }
-                else
-                {
-                    <img id="upload-preview" class="" src="" height="100" width="100" style="border-radius:100% !important" />
-                }
-            </div>
-            <div class="col-md-1 col-sm-3 col-xs-12" style="line-height:55px;">
-                <div class="upload-btn-wrapper" style="cursor:pointer;">
-                    <button class="btn btn-default" type="button" onclick="showPictureUpload();" style="margin-top:-6%;">Chọn hình</button>
-                    @*@Html.TextBoxFor(model => model.PictureUpload, new { @type = "file", @onchange = "PreviewImage(this,\"upload-preview\")", @accept = "*.jpg", @class = "hidden", @id = "urlImage" })*@
-                    <input type="file" name="myFile" id="urlImage" class="hidden" onchange="PreviewImage(this,'upload-preview')" accept="*.jpg" />
-
-                </div>
-            </div>
+            <label class="">Trạng thái</label>
+            <label class="">&nbsp; &nbsp; @Html.CheckBoxFor(model => model.IsActive, new { @class = "icheck" })</label>
         </div>
+
+        <div class="form-group">
+            <label>Mô tả </label>
+            @Html.TextBoxFor(model => model.Description, new { @class = "form-control", @placeholder = "Mô tả", @autocomplete = "off" })
+        </div>
+
     </div>
+
 </div>
 
 
 <script src="@Url.Content("~/Areas/Admin/js/lib/bootstrap/js/bootstrap.min.js")"></script>
-
+<script src="@Url.Content("~/Scripts/InputCurency.js")"></script>
 <script>
+    $(document).ready(function () {
+        init_ICheck()
+    });
+
     function showPictureUpload() {
         $('[id=urlImage]').click();
     }
 
     function SubmitForm(action) {
-        var proName = $('#Name').val();
-        var proPrice = $('#Price').val();
-        var ID = $('#ID').val();
-        var ImageUrl = $('#ImageUrl').val();;
-
-        debugger;
-        /* get image data */
-        var proPictureUpload = $('#urlImage');
-        var oFReader = new FileReader();
-        var ImageData = "";
-        if (proPictureUpload[0].files.length > 0) {
-            oFReader.readAsDataURL(proPictureUpload[0].files[0]);
-            ImageData = oFReader.result;
-        }
+        $('input.currency').val($('input.currency').val().replace(/[\D\s\._\-\,]+/g, ""));
 
         /* create request  */
-        var request = {
-            Name: proName,
-            Price: proPrice,
-            ImageData: ImageData,
-            ID: ID,
-            ImageUrl: ImageUrl,
-        };
+        var pictureUpload = $('#urlImage');
+
+        var formData = new FormData();
+        formData.append("ID", $('#ID').val());
+        formData.append("ImageUrl", $('#ImageUrl').val());
+        formData.append("Name", $('#Name').val());
+        debugger;
+        var cateID = $('#Price').val();
+
+        formData.append("CategoryID", $('#CategoryDdl').val());
+        formData.append("Description", $('#Description').val());
+        formData.append("Price", $('#Price').val());
+        formData.append("IsActive", $('#IsActive').val());
+        if (pictureUpload[0].files.length > 0) {
+            formData.append("UploadedImage", pictureUpload[0].files[0]);
+        }
 
         /* call ajax */
         $.ajax({
-            url: '/Admin/CFProduct/Create',
+            url: '/Admin/CFProduct/CreateOrUpdate',
             type: "post",
-            traditional: true,
-            data: JSON.stringify(request),
-            contentType: "application/json; charset=utf-8",
+            data: formData,
+            contentType: false,
             processData: false,
-            success: function () {
-                $('#modalProductDetail').modal('hide');
+            dataType: 'html',
+            success: function (data) {
+                $('#modalDetail').modal('hide');
                 LoadGrid();
             },
-            error: function (jqXHR, textStatus, errorThrown) {
-                $(".detail-view").html(jqXHR.responseText);
+            error: function (xhr, httpStatusMessage, customErrorMessage) {
+                if (xhr.status === 400) {
+                    $("#form-detail").html(xhr.responseText);
+                }
+                else {
+                    alert(xhr.statusText);
+                }
+
             }
-        });
+        })
     }
 </script>

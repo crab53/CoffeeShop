@@ -28,28 +28,24 @@
 @Html.HiddenFor(model => model.ID)
 @Html.HiddenFor(model => model.ImageUrl)
 <div class="row">
-    <div class="col-lg-4" id="parent">
-        <div id="child">
-            <div class="form-group center">
-                @if (!string.IsNullOrEmpty(Model.ImageUrl))
-                {
-                    <img id="upload-preview" src="@Model.ImageUrl" height="100" width="100" class="" style="border-radius:100% !important" />
-                }
-                else
-                {
-                    <img id="upload-preview" class="" src="@Url.Content("~/Areas/Admin/images/product_1/product_default.jpg")" height="100" width="100" style="border-radius:100% !important" />
-                }
-            </div>
-
-            <div class="form-group center" style="line-height:55px;">
-                <div class="upload-btn-wrapper" style="cursor:pointer;">
-                    <button class="btn btn-default" type="button" onclick="showPictureUpload();" style="margin-top:-6%;">Chọn hình</button>
-                    <input type="file" name="myFile" id="urlImage" class="hidden" onchange="PreviewImage(this,'upload-preview')" accept="*.jpg" />
-                </div>
-            </div>
+    <div class="col-lg-4">
+        <div class="form-group center">
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img id="upload-preview" src="@Model.ImageUrl" height="100" width="100" class="" style="border-radius:100% !important" />
+            }
+            else
+            {
+                <img id="upload-preview" class="" src="@Url.Content("~/Areas/Admin/images/product_1/product_default.jpg")" height="100" width="100" style="border-radius:100% !important" />
+            }
         </div>
 
-
+        <div class="form-group center" style="line-height:55px;">
+            <div class="upload-btn-wrapper" style="cursor:pointer;">
+                <button class="btn btn-default" type="button" onclick="showPictureUpload();" style="margin-top:-6%;">Chọn hình</button>
+                <input type="file" name="myFile" id="urlImage" class="hidden" onchange="PreviewImage(this,'upload-preview')" accept="*.jpg" />
+            </div>
+        </div>
     </div>
 
     <div class="col-lg-8">
@@ -63,10 +59,9 @@
 
         </div>
 
-
         <div class="form-group">
             <label>Mô tả </label>
-            @Html.TextBoxFor(model => model.Description, new { @class = "form-control currency", @placeholder = "Mô tả", @autocomplete = "off" })
+            @Html.TextBoxFor(model => model.Description, new { @class = "form-control", @placeholder = "Mô tả", @autocomplete = "off" })
         </div>
 
         <div class="form-group">
@@ -77,7 +72,7 @@
 </div>
 
 @*<script src="@Url.Content( "~/Scripts/jquery.validate.min.js")"></script>
-<script src="@Url.Content( "~/Scripts/jquery.validate.unobtrusive.min.js")"></script>*@
+    <script src="@Url.Content( "~/Scripts/jquery.validate.unobtrusive.min.js")"></script>*@
 
 <script>
     $(document).ready(function () {

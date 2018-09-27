@@ -13,6 +13,12 @@ namespace CF.DTO
         public string EmployeeID { get; set; }
         public int PageIndex { get; set; }
         public int PageSize { get; set; }
+        public RequestBase()
+        {
+            PageSize = 9999;
+            PageIndex = 0;
+            StoreID = "";
+        }
     }
 
     public class ResponseBase

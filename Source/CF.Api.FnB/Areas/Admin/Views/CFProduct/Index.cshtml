@@ -14,15 +14,14 @@
 </div>
 <!-- Modal -->
 <!-- Large modal -->
-
-<div class="modal fade bd-example-modal-lg" id="modalProductDetail" tabindex="-1" role="dialog" @*aria-hidden="true"*@>
+<div class="modal fade bd-example-modal-lg" id="modalDetail" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Product info <span style="color:#d9534f;font-weight:bold" id="idProducttName"></span></h4>
+                <h4 class="modal-title">Product info <span style="color:#d9534f;font-weight:bold" id="idName"></span></h4>
             </div>
             <div class="modal-body" style="display:initial">
-                <div class="idProductDetail" id="idProductDetail">
+                <div class="" id="form-detail">
                     <!-- Product form -->
                 </div>
             </div>
@@ -43,20 +42,21 @@
         LoadGrid();
     })
 
-    function ShowModal(productID, productName) {
-        var modal = $("#modalProductDetail");
+    function ShowModal(id, Name) {
+        var modal = $("#modalDetail");
+        $("#idName").text(Name);
         $(modal).modal({
             keyboard: false,
             show: true,
         });
-        LoadProductDetail("#idProductDetail", productID);
+        LoadProductDetail("#form-detail", id);
     }
 
-    function LoadProductDetail(element, productID) {
+    function LoadProductDetail(element, id) {
         $.ajax({
-            url: '/Admin/CFProduct/LoadProductDetail',
+            url: '/Admin/CFProduct/LoadDetail',
             type: 'get',
-            data: { ID: productID },
+            data: { ID: id },
             dataType: 'html',
 
             success: function (data) {

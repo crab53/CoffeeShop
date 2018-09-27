@@ -32,7 +32,7 @@
                                 var imageUrl = !string.IsNullOrEmpty(item.ImageUrl) ? item.ImageUrl : @Url.Content("~/Areas/Admin/images/product_1/product_default.jpg");
                                 <tr class="odd gradeX">
                                     <td class="text-center">
-                                        @item.ID
+                                        @item.ID.Substring(0, 5)
                                     </td>
                                     <td> @item.Name </td>
                                     <td>
@@ -60,14 +60,14 @@
                                     </td>
                                     <td class="text-center">
                                         @*<a href="javascript:void(0)"
-                                onclick='ShowView("@Url.Action("View","CMSProducts",new { Id=item.ID})")'
-                                class="btn btn-primary btn-xs view details"><i class="fa fa-eye"></i>&nbsp;Xem</a>&nbsp;&nbsp;*@
+        onclick='ShowView("@Url.Action("View","CMSProducts",new { Id=item.ID})")'
+        class="btn btn-primary btn-xs view details"><i class="fa fa-eye"></i>&nbsp;Xem</a>&nbsp;&nbsp;*@
 
                                         <a href="javascript:void(0)"
-                                           onclick='ShowView("@Url.Action("Edit","CMSProducts",new { Id=item.ID})")'
+                                           onclick='ShowModal("@item.ID","@item.Name")'
                                            class="btn btn-info btn-xs edit details"><i class="fa fa-edit"></i>&nbsp;Cập nhập</a><span> &nbsp;</span>
                                         <a href="javascript:void(0)"
-                                           onclick=Delete('@item.ID')
+                                           onclick='Delete("@item.ID")'
                                            class="btn btn-danger btn-xs delete details"><i class="fa fa-trash-o"></i>&nbsp;Xóa</a>
                                     </td>
                                 </tr>

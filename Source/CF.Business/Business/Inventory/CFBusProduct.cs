@@ -57,7 +57,7 @@ namespace CF.Business.Business.Inventory
                             IsActive = o.p.IsActive,
                             ProductType = o.p.ProductType,
                             Price = o.p.Price,
-                            ImageUrl = o.p.ImageUrl,
+                            ImageUrl = string.IsNullOrEmpty(o.p.ImageUrl) ? "" : Constants._PublicImages + o.p.ImageUrl,
                         }).ToList();
                     response.Success = true;
                 }
@@ -88,7 +88,7 @@ namespace CF.Business.Business.Inventory
                             IsActive = o.p.IsActive,
                             ProductType = o.p.ProductType,
                             Price = o.p.Price,
-                            ImageUrl = o.p.ImageUrl,
+                            ImageUrl = string.IsNullOrEmpty(o.p.ImageUrl) ? "" : Constants._PublicImages + o.p.ImageUrl,
                         }).FirstOrDefault();
 
                     if (response.Product != null)
@@ -165,7 +165,7 @@ namespace CF.Business.Business.Inventory
                                             product.Description = input.Product.Description;
                                             product.IsActive = input.Product.IsActive;
 
-                                            if (_db.SaveChanges() > 0)
+                                            if (_db.SaveChanges() >= 0)
                                                 response.Success = true;
                                             else
                                                 response.Message = "Đã có lỗi xảy ra. Tạm thời không thể thay đổi thông tin sản phẩm.";

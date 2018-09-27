@@ -7,15 +7,23 @@ namespace CF.DTO.Inventory
     public class ProductDTO
     {
         public string ID { get; set; }
+        [Required(ErrorMessage = "Vui lòng chọn thể loại")]
         public string CategoryID { get; set; }
         public string CategoryName { get; set; }
         public int ProductType { get; set; }
         public string ImageUrl { get; set; }
         public string ImageData { get; set; }
+        [Required(ErrorMessage = "Vui lòng nhập tên sản phẩm ")]
+        [MaxLength(250, ErrorMessage = "Tên thể loại tối đa 250 kí tự")]
         public string Name { get; set; }
+        [Required(ErrorMessage = "Vui lòng nhập giá sản phẩm")]
         public double Price { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
+        public ProductDTO()
+        {
+            IsActive = true;
+        }
     }
 
     #region Request

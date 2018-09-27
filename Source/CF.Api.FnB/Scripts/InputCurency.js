@@ -45,18 +45,21 @@ function init_Value() {
 }
 
 function init_CheckForm() {
-    var $form = $('.form-horizontal');
+    //var $form = $('.form-horizontal');
+    //$form.on("submit", function (event) {
 
-    /*
-    * ==================================
-    * When Form Submitted
-    * ==================================
-    */
-    $form.on("submit", function (event) {
+    //    $('input.currency').val($('input.currency').val().replace(/[\D\s\._\-\,]+/g, ""));
+    //    event.preventDefault();
+    //});
 
+    var btnSave = $('#btn-edit-save');
+    var onlickSave = btnSave.onclick;
+    
+    btnSave.onclick = function () {
+        debugger;
         $('input.currency').val($('input.currency').val().replace(/[\D\s\._\-\,]+/g, ""));
-        event.preventDefault();
-    });
+        onlickSave();
+    };
 }
 
 $(document).ready(function () {

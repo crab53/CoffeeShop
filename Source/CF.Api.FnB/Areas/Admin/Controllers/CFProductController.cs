@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using CF.Business.Business.Inventory;
+using CF.Business.Core;
 using CF.DTO.Inventory;
 
 namespace CF.Api.FnB.Areas.Admin.Controllers
 {
     public class CFProductController : Controller
     {
+        public CFProductController()
+        {
+            ViewBag.Category = CFBusCategory.Instance.GetListCategorySelectItem("123StoreID");
+        }
         // GET: Admin/CFProduct
         public ActionResult Index()
         {
@@ -25,31 +31,14 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
             /* request get data */
             GetListProductRequest request = new GetListProductRequest()
             {
-
+                StoreID = "123StoreID"
             };
             var response = CFBusProduct.Instance.GetListProduct(request);
 
             /* response */
             if (response.Success == true)
             {
-                if (response.ListProduct.Count == 0) /* test data */
-                {
-                    model.Add(new ProductDTO { ID = "Pro01", Name = "pro 01", Price = 1, ImageUrl = "" });
-                    model.Add(new ProductDTO { ID = "Pro02", Name = "pro 01", Price = 2, ImageUrl = "" });
-                    model.Add(new ProductDTO { ID = "Pro03", Name = "pro 01", Price = 3, ImageUrl = "" });
-                    model.Add(new ProductDTO { ID = "Pro04", Name = "pro 01", Price = 4, ImageUrl = "" });
-                    model.Add(new ProductDTO { ID = "Pro05", Name = "pro 01", Price = 5, ImageUrl = "" });
-                    model.Add(new ProductDTO { ID = "Pro06", Name = "pro 01", Price = 6, ImageUrl = "" });
-                    model.Add(new ProductDTO { ID = "Pro07", Name = "pro 01", Price = 7, ImageUrl = "" });
-                    model.Add(new ProductDTO { ID = "Pro08", Name = "pro 01", Price = 8, ImageUrl = "" });
-                    model.Add(new ProductDTO { ID = "Pro09", Name = "pro 01", Price = 9, ImageUrl = "" });
-                    model.Add(new ProductDTO { ID = "Pro10", Name = "pro 01", Price = 10, ImageUrl = "" });
-                    model.Add(new ProductDTO { ID = "Pro11", Name = "pro 01", Price = 11, ImageUrl = "" });
-                    model.Add(new ProductDTO { ID = "Pro12", Name = "pro 01", Price = 12, ImageUrl = "" });
-                    model.Add(new ProductDTO { ID = "Pro13", Name = "pro 01", Price = 13, ImageUrl = "" });
-                    model.Add(new ProductDTO { ID = "Pro14", Name = "pro 01", Price = 14, ImageUrl = "" });
-                    model.Add(new ProductDTO { ID = "Pro15", Name = "pro 01", Price = 15, ImageUrl = "" });
-                }
+                model = response.ListProduct;
             }
             return PartialView("_ListItem", model);
         }
@@ -66,32 +55,51 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
             return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
         }
 
-        public ActionResult LoadProductDetail(string ID)
+        public ActionResult LoadDetail(string ID)
         {
             var model = new ProductDTO();
 
-            var msg = "";
-            var result = true;
-            //var result = _fac.HidePin(ID, "Admin", ref msg);
-            if (result)
+            /* request bus */
+            var request = new GetProductInfoRequest()
             {
-                Response.StatusCode = (int)HttpStatusCode.OK;
-
-                //return new HttpStatusCodeResult(HttpStatusCode.OK);
-
-                return PartialView("_Form", model);
+                ID = ID,
+                StoreID = "123StoreID"
+            };
+            var response = CFBusProduct.Instance.GetProductInfo(request);
+            if (response.Success)
+            {
+                model = response.Product;
             }
             return PartialView("_Form", model);
         }
 
-        public ActionResult Create(ProductDTO Model)
+        public ActionResult CreateOrUpdate(ProductDTO model)
         {
             try
             {
+                /* validate model */
+                if (!ModelState.IsValid)
+                {
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return PartialView("_Form", model);
+                }
+
                 /* request */
+                var pictureUpload = System.Web.HttpContext.Current.Request.Files["UploadedImage"];
+                if (pictureUpload != null)
+                {
+                    //model.ImageData = CommonFunction.ToBase64String(pictureUpload);
+                    model.ImageUrl = Guid.NewGuid().ToString() + Path.GetExtension(pictureUpload.FileName);
+                }
+                else if (!string.IsNullOrEmpty(model.ImageUrl))
+                {
+                    model.ImageUrl = Path.GetFileName(model.ImageUrl);
+                }
+
                 var request = new CreateOrUpdateProductRequest
                 {
-                    Product = Model,
+                    Product = model,
+                    StoreID = "123StoreID",
                 };
 
                 /* call bus */
@@ -100,11 +108,27 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
                 /* response */
                 if (response.Success)
                 {
+                    if (pictureUpload != null) /* save image */
+                    {
+                        string path = System.Web.Hosting.HostingEnvironment.MapPath(Constants._PostImages);
+                        if (!Directory.Exists(path))
+                        {
+                            Directory.CreateDirectory(path);
+                        }
+                        pictureUpload.SaveAs(path + model.ImageUrl);
+                    }
                     return new HttpStatusCodeResult(HttpStatusCode.OK);
                 }
+                else
+                {
+                    ModelState.AddModelError("Name", response.Message);
+                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                    return PartialView("_Form", model);
+                }
             }
-            catch(Exception ex) { };
-            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            catch (Exception ex) { };
+            return new HttpStatusCodeResult(HttpStatusCode.InternalServerError, "Internal Server Error");
         }
+
     }
 }

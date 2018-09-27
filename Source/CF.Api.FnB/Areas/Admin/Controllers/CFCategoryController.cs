@@ -94,6 +94,11 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
                     //model.ImageData = CommonFunction.ToBase64String(pictureUpload);
                     model.ImageUrl = Guid.NewGuid().ToString() + Path.GetExtension(pictureUpload.FileName);
                 }
+                else if (!string.IsNullOrEmpty(model.ImageUrl))
+                {
+                    model.ImageUrl = Path.GetFileName(model.ImageUrl);
+                }
+                
                 var request = new CreateOrUpdateCategoryRequest
                 {
                     Category = model,
