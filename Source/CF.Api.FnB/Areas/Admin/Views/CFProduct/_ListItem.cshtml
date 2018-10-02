@@ -11,11 +11,6 @@
                     </a>
                 </div>
                 <table id="tblProduct" class="hide nowrap table table-hover table-striped table-bordered" cellspacing="0" width='100%'>
-                    <div class="actions">
-                        <a href="javascript:;" class="btn btn-info btn-flat btn-addon m-b-10 m-l-5" onclick=ShowModal('','')>
-                            <i class="fa fa-plus"></i> Thêm mới
-                        </a>
-                    </div>
                     <thead>
                         <tr>
                             <th>Code</th>
@@ -64,10 +59,6 @@
                                         <img class="imageThumb" src="@imageUrl" style="width: 50px; height:50px" />
                                     </td>
                                     <td class="text-center">
-                                        @*<a href="javascript:void(0)"
-                            onclick='ShowView("@Url.Action("View","CMSProducts",new { Id=item.ID})")'
-                            class="btn btn-primary btn-xs view details"><i class="fa fa-eye"></i>&nbsp;Xem</a>&nbsp;&nbsp;*@
-
                                         <a href="javascript:void(0)"
                                            onclick='ShowModal("@item.ID","@item.Name")'
                                            class="btn btn-info btn-xs edit details"><i class="fa fa-edit"></i>&nbsp;Cập nhập</a><span> &nbsp;</span>
