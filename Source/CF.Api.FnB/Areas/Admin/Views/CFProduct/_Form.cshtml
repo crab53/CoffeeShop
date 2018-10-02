@@ -75,10 +75,8 @@
     </div>
 
 </div>
-
-
-<script src="@Url.Content("~/Areas/Admin/js/lib/bootstrap/js/bootstrap.min.js")"></script>
 <script src="@Url.Content("~/Scripts/InputCurency.js")"></script>
+
 <script>
     $(document).ready(function () {
         init_ICheck()
@@ -98,9 +96,6 @@
         formData.append("ID", $('#ID').val());
         formData.append("ImageUrl", $('#ImageUrl').val());
         formData.append("Name", $('#Name').val());
-        debugger;
-        var cateID = $('#Price').val();
-
         formData.append("CategoryID", $('#CategoryDdl').val());
         formData.append("Description", $('#Description').val());
         formData.append("Price", $('#Price').val());
