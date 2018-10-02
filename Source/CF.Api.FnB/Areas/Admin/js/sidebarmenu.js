@@ -130,7 +130,7 @@ File: js
     var EVENT_KEY = '.' + DATA_KEY;
     var DATA_API_KEY = '.data-api';
     var JQUERY_NO_CONFLICT = $.fn[NAME];
-    var TRANSITION_DURATION = 350;
+    var TRANSITION_DURATION = 1;
 
     var Default = {
       toggle: true,
