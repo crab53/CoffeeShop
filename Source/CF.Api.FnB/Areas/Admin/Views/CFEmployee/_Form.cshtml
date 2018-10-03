@@ -1,4 +1,4 @@
-﻿@model CF.DTO.Inventory.CategoryDTO
+﻿@model  CF.DTO.Permission.EmployeeDTO
 
 <style>
     .center {
@@ -33,15 +33,39 @@
 
     <div class="col-lg-8">
         <div class="form-group">
-            <label>Tên category:</label>
+            <label>Tên nhân viên:</label>
             @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @placeholder = "Tên", @autocomplete = "off" })
             @Html.ValidationMessageFor(model => model.Name, null, new { @class = "text-danger", })
-
         </div>
 
         <div class="form-group">
-            <label>Mô tả </label>
-            @Html.TextBoxFor(model => model.Description, new { @class = "form-control", @placeholder = "Mô tả", @autocomplete = "off" })
+            <label>Phân Quyền </label>
+            <div>
+                @Html.DropDownListFor(model => model.RoleID,
+                    new SelectList(ViewBag.Role, "Value", "Text", Model.RoleID), "Vui lòng chọn phân quyền",
+                    new
+                    {
+                        @class = "form-control select2_multiple",
+                        @id = "RoleDdl",
+                        @style = "width:100%;"
+                    })
+                @Html.ValidationMessageFor(model => model.RoleID, null, new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Email </label>
+            @Html.TextBoxFor(model => model.Email, new { @class = "form-control", @placeholder = "example@email.com", @autocomplete = "off" })
+        </div>
+
+        <div class="form-group">
+            <label>Số điện thoại </label>
+            @Html.TextBoxFor(model => model.Phone, new { @class = "form-control", @placeholder = "090...", @autocomplete = "off" })
+        </div>
+
+        <div class="form-group">
+            <label>Địa chỉ</label>
+            @Html.TextBoxFor(model => model.Address, new { @class = "form-control", @placeholder = "Số 1, Hàm Nghi, Q.1, TP.Hồ Chí Minh", @autocomplete = "off" })
         </div>
 
         <div class="form-group">
@@ -72,7 +96,10 @@
         formData.append("ID", $('#ID').val());
         formData.append("ImageUrl", $('#ImageUrl').val());
         formData.append("Name", $('#Name').val());
-        formData.append("Description", $('#Description').val());
+        formData.append("RoleID", $('#RoleDdl').val());
+        formData.append("Email", $('#Email').val());
+        formData.append("Phone", $('#Phone').val());
+        formData.append("Address", $('#Address').val());
         formData.append("IsActive", $('#IsActive').val());
         if (pictureUpload[0].files.length > 0) {
             formData.append("UploadedImage", pictureUpload[0].files[0]);
@@ -80,7 +107,7 @@
 
         /* call ajax */
         $.ajax({
-            url: '/Admin/CFCategory/CreateOrUpdate',
+            url: '/Admin/CFEmployee/CreateOrUpdate',
             type: "post",
             data: formData,
             contentType: false,

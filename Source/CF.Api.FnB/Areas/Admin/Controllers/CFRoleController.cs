@@ -5,15 +5,16 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using CF.Business.Business.Inventory;
+using CF.Business.Business.Permission;
 using CF.Business.Common;
 using CF.Business.Core;
-using CF.DTO.Inventory;
+using CF.DTO.Permission;
+
 namespace CF.Api.FnB.Areas.Admin.Controllers
 {
-    public class CFCategoryController : Controller
+    public class CFRoleController : Controller
     {
-        // GET: Admin/CFCategory
+        // GET: Admin/CFRole
         public ActionResult Index()
         {
             /* show view */
@@ -22,19 +23,19 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
 
         public ActionResult LoadGrid()
         {
-            var model = new List<CategoryDTO>();
+            var model = new List<RoleDTO>();
 
             /* request get data */
-            var request = new GetListCategoryRequest()
+            var request = new GetListRoleRequest()
             {
                 StoreID = "123StoreID",
             };
-            var response = CFBusCategory.Instance.GetListCategory(request);
+            var response = CFBusRole.Instance.GetListRole(request);
 
             /* response */
             if (response.Success == true)
             {
-                model = response.ListCategory;
+                model = response.ListRole;
             }
 
             return PartialView("_ListItem", model);
@@ -43,12 +44,12 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
         public ActionResult Delete(string ID)
         {
             /* request bus */
-            var request = new DeleteCategoryRequest()
+            var request = new DeleteRoleRequest()
             {
                 ID = ID,
                 StoreID = "123StoreID"
             };
-            var response = CFBusCategory.Instance.DeleteCategory(request);
+            var response = CFBusRole.Instance.DeleteRole(request);
 
             /* response */
             if (response.Success)
@@ -60,23 +61,23 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
 
         public ActionResult LoadDetail(string ID)
         {
-            var model = new CategoryDTO();
+            var model = new RoleDTO();
 
             /* request bus */
-            var request = new GetCategoryInfoRequest()
+            var request = new GetRoleInfoRequest()
             {
                 ID = ID,
                 StoreID = "123StoreID"
             };
-            var response = CFBusCategory.Instance.GetCategoryInfo(request);
+            var response = CFBusRole.Instance.GetRoleInfo(request);
             if (response.Success)
             {
-                model = response.Category;
+                model = response.Role;
             }
             return PartialView("_Form", model);
         }
 
-        public ActionResult CreateOrUpdate(CategoryDTO model)
+        public ActionResult CreateOrUpdate(RoleDTO model)
         {
             try
             {
@@ -87,38 +88,17 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
                     return PartialView("_Form", model);
                 }
 
-                /* request */
-                var pictureUpload = System.Web.HttpContext.Current.Request.Files["UploadedImage"];
-                if (pictureUpload != null)
+                var request = new CreateOrUpdateRoleRequest
                 {
-                    //model.ImageData = CommonFunction.ToBase64String(pictureUpload);
-                    model.ImageUrl = Guid.NewGuid().ToString() + Path.GetExtension(pictureUpload.FileName);
-                }
-                else if (!string.IsNullOrEmpty(model.ImageUrl))
-                {
-                    model.ImageUrl = Path.GetFileName(model.ImageUrl);
-                }
-                
-                var request = new CreateOrUpdateCategoryRequest
-                {
-                    Category = model,
+                    Role = model,
                     StoreID = "123StoreID",
                 };
                 /* call bus */
-                var response = CFBusCategory.Instance.CreateOrUpdateCategory(request);
+                var response = CFBusRole.Instance.CreateOrUpdateRole(request);
 
                 /* response */
                 if (response.Success)
                 {
-                    if (pictureUpload != null) /* save image */
-                    {
-                        string path = System.Web.Hosting.HostingEnvironment.MapPath(Constants._PostImages);
-                        if (!Directory.Exists(path))
-                        {
-                            Directory.CreateDirectory(path);
-                        }
-                        pictureUpload.SaveAs(path + model.ImageUrl);
-                    }
                     return new HttpStatusCodeResult(HttpStatusCode.OK);
                 }
                 else

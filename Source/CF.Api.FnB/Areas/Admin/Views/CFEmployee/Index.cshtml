@@ -1,11 +1,11 @@
 ﻿@{
     Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
-    ViewBag.Title = "Products";
+    ViewBag.Title = "Categories";
 }
 
 <div class="container-fluid ">
 
-    @using (Html.BeginForm("LoadGrid", "CFProduct", FormMethod.Post, new { @class = "form-horizontal search-form" }))
+    @using (Html.BeginForm("LoadGrid", "CFEmployee", FormMethod.Post, new { @class = "form-horizontal search-form" }))
     {
     }
     <div class="detail-view">
@@ -14,11 +14,12 @@
 </div>
 <!-- Modal -->
 <!-- Large modal -->
-<div class="modal fade bd-example-modal-lg" id="modalDetail" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false">
+
+<div class="modal fade bd-example-modal-lg" id="modalDetail" tabindex="-1" role="dialog" @*aria-hidden="true"*@ data-backdrop="static" data-keyboard="false">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">Product info <span style="color:#d9534f;font-weight:bold" id="idName"></span></h4>
+                <h4 class="modal-title">Nhân viên <span style="color:#d9534f;font-weight:bold" id="idName"></span></h4>
             </div>
             <div class="modal-body" style="display:initial">
                 <div class="" id="form-detail">
@@ -52,7 +53,7 @@
 
     function LoadProductDetail(element, id) {
         $.ajax({
-            url: '/Admin/CFProduct/LoadDetail',
+            url: '/Admin/CFEmployee/LoadDetail',
             type: 'get',
             data: { ID: id },
             dataType: 'html',
@@ -71,18 +72,17 @@
         });
     }
 
-    function Delete(ID) {
+    function Delete(id) {
         $.ajax({
-            url: '/Admin/CFProduct/Delete',
+            url: '/Admin/CFEmployee/Delete',
             type: 'post',
-            data: { ID: ID },
+            data: { ID: id },
             dataType: 'html',
             traditional: true,
             error: function (e) {
             },
             success: function (data) {
                 LoadGrid();
-                $('.se-pre-con').hide();
             },
             beforeSend: function () {
                 $('.se-pre-con').show();
@@ -93,6 +93,7 @@
         });
     }
     
+
 </script>
 
 

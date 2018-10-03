@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,10 +10,18 @@ namespace CF.DTO.Permission
     public class RoleDTO
     {
         public string ID { get; set; }
+
+        [Required(ErrorMessage = "Vui lòng nhập tên quyền")]
+        [MaxLength(250, ErrorMessage = "Tên nhân viên tối đa 250 kí tự")]
         public string Name { get; set; }
         public string Description { get; set; }
         public bool IsActive { get; set; }
         public List<PermissionDTO> ListPermission { get; set; }
+        public RoleDTO()
+        {
+            IsActive = true;
+            ListPermission = new List<PermissionDTO>();
+        }
     }
 
     public class PermissionDTO

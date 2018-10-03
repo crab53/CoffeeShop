@@ -11,14 +11,16 @@
             <ul id="sidebarnav">
                 <li class="nav-devider"></li>
                 <li class="nav-label">Coffee Shop Management</li>
+                <!--Inventory -->
                 <li>
                     <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-product-hunt"></i><span class="hide-menu">Inventory @*<span class="label label-rouded label-primary pull-right">3</span>*@</span></a>
                     <ul aria-expanded="false" class="collapse">
-                        <li><a href="#">Categories </a></li>
-                        <li><a href="#">Products </a></li>
-                        <li><a href="#">Discount </a></li>
+                        <li><a href="@Url.Action("Index","CFCategory")">Categories </a></li>
+                        <li><a href="@Url.Action("Index","CFProduct")">Products </a></li>
                     </ul>
                 </li>
+
+                <!-- Order and table -->
                 <li>
                     <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-bar-chart"></i><span class="hide-menu">Order Management</span></a>
                     <ul aria-expanded="false" class="collapse">
@@ -26,9 +28,16 @@
                         <li><a href="#">Orders</a></li>
                         <li><a href="#">Receipts</a></li>
                     </ul>
-
                 </li>
-                <li> <a href="#" aria-expanded="false"><i class="fa fa-user"></i><span class="hide-menu">Employees</span></a></li>
+
+                <!-- Employee -->
+                <li>
+                    <a class="has-arrow  " href="#" aria-expanded="false"><i class="fa fa-user"></i><span class="hide-menu">Nhân viên và phân quyền </span></a>
+                    <ul aria-expanded="false" class="collapse">
+                        <li><a href="@Url.Action("Index","CFRole")">Phân quyền </a></li>
+                        <li><a href="@Url.Action("Index","CFEmployee")">Nhân viên </a></li>
+                    </ul>
+                </li>
                 <li> <a href="#" aria-expanded="false"><i class="fa fa-cog"></i><span class="hide-menu">Infor &amp; setting</span></a></li>
 
             </ul>

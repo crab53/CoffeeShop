@@ -14,8 +14,6 @@ namespace CF.DTO.Inventory
         public string ImageUrl { get; set; }
         public string ImageData { get; set; }
         public HttpPostedFile PictureUpload { get; set; }
-
-
         [Required(ErrorMessage = "Vui lòng nhập tên thể loại")]
         [MaxLength(250, ErrorMessage = "Tên thể loại tối đa 250 kí tự")]
         public string Name { get; set; }

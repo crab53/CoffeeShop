@@ -1,4 +1,4 @@
-﻿@model CF.DTO.Inventory.CategoryDTO
+﻿@model CF.DTO.Permission.RoleDTO
 
 <style>
     .center {
@@ -9,31 +9,14 @@
 </style>
 
 @Html.HiddenFor(model => model.ID)
-@Html.HiddenFor(model => model.ImageUrl)
 <div class="row">
-    <div class="col-lg-4">
-        <div class="form-group center">
-            @if (!string.IsNullOrEmpty(Model.ImageUrl))
-            {
-                <img id="upload-preview" src="@Model.ImageUrl" height="100" width="100" class="" style="border-radius:100% !important" />
-            }
-            else
-            {
-                <img id="upload-preview" class="" src="@Url.Content("~/Areas/Admin/images/product_1/product_default.jpg")" height="100" width="100" style="border-radius:100% !important" />
-            }
-        </div>
+    @*<div class="col-lg-4">
+        
+    </div>*@
 
-        <div class="form-group center" style="line-height:55px;">
-            <div class="upload-btn-wrapper" style="cursor:pointer;">
-                <button class="btn btn-default" type="button" onclick="showPictureUpload();" style="margin-top:-6%;">Chọn hình</button>
-                <input type="file" name="myFile" id="urlImage" class="hidden" onchange="PreviewImage(this,'upload-preview')" accept="*.jpg" />
-            </div>
-        </div>
-    </div>
-
-    <div class="col-lg-8">
+    <div class="col-lg-12">
         <div class="form-group">
-            <label>Tên category:</label>
+            <label>Tên quyền:</label>
             @Html.TextBoxFor(model => model.Name, new { @class = "form-control", @placeholder = "Tên", @autocomplete = "off" })
             @Html.ValidationMessageFor(model => model.Name, null, new { @class = "text-danger", })
 
@@ -51,9 +34,6 @@
     </div>
 </div>
 
-@*<script src="@Url.Content( "~/Scripts/jquery.validate.min.js")"></script>
-    <script src="@Url.Content( "~/Scripts/jquery.validate.unobtrusive.min.js")"></script>*@
-
 <script>
     $(document).ready(function () {
         init_ICheck()
@@ -70,17 +50,13 @@
 
         var formData = new FormData();
         formData.append("ID", $('#ID').val());
-        formData.append("ImageUrl", $('#ImageUrl').val());
         formData.append("Name", $('#Name').val());
         formData.append("Description", $('#Description').val());
         formData.append("IsActive", $('#IsActive').val());
-        if (pictureUpload[0].files.length > 0) {
-            formData.append("UploadedImage", pictureUpload[0].files[0]);
-        }
 
         /* call ajax */
         $.ajax({
-            url: '/Admin/CFCategory/CreateOrUpdate',
+            url: '/Admin/CFRole/CreateOrUpdate',
             type: "post",
             data: formData,
             contentType: false,

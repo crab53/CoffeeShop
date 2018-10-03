@@ -5,15 +5,21 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using CF.Business.Business.Inventory;
+using CF.Business.Business.Permission;
 using CF.Business.Common;
 using CF.Business.Core;
-using CF.DTO.Inventory;
+using CF.DTO.Permission;
+
 namespace CF.Api.FnB.Areas.Admin.Controllers
 {
-    public class CFCategoryController : Controller
+    public class CFEmployeeController : Controller
     {
-        // GET: Admin/CFCategory
+        public CFEmployeeController()
+        {
+            ViewBag.Role = CFBusEmployee.Instance.GetListRoleSelectItem("123StoreID");
+        }
+
+        // GET: Admin/CFEmployee
         public ActionResult Index()
         {
             /* show view */
@@ -22,19 +28,19 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
 
         public ActionResult LoadGrid()
         {
-            var model = new List<CategoryDTO>();
+            var model = new List<EmployeeDTO>();
 
             /* request get data */
-            var request = new GetListCategoryRequest()
+            var request = new GetListEmployeeRequest()
             {
                 StoreID = "123StoreID",
             };
-            var response = CFBusCategory.Instance.GetListCategory(request);
+            var response = CFBusEmployee.Instance.GetListEmployee(request);
 
             /* response */
             if (response.Success == true)
             {
-                model = response.ListCategory;
+                model = response.ListEmployee;
             }
 
             return PartialView("_ListItem", model);
@@ -43,12 +49,12 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
         public ActionResult Delete(string ID)
         {
             /* request bus */
-            var request = new DeleteCategoryRequest()
+            var request = new DeleteEmployeeRequest()
             {
                 ID = ID,
                 StoreID = "123StoreID"
             };
-            var response = CFBusCategory.Instance.DeleteCategory(request);
+            var response = CFBusEmployee.Instance.DeleteEmployee(request);
 
             /* response */
             if (response.Success)
@@ -60,23 +66,23 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
 
         public ActionResult LoadDetail(string ID)
         {
-            var model = new CategoryDTO();
+            var model = new EmployeeDTO();
 
             /* request bus */
-            var request = new GetCategoryInfoRequest()
+            var request = new GetEmployeeInfoRequest()
             {
                 ID = ID,
                 StoreID = "123StoreID"
             };
-            var response = CFBusCategory.Instance.GetCategoryInfo(request);
+            var response = CFBusEmployee.Instance.GetEmployeeInfo(request);
             if (response.Success)
             {
-                model = response.Category;
+                model = response.Employee;
             }
             return PartialView("_Form", model);
         }
 
-        public ActionResult CreateOrUpdate(CategoryDTO model)
+        public ActionResult CreateOrUpdate(EmployeeDTO model)
         {
             try
             {
@@ -99,13 +105,13 @@ namespace CF.Api.FnB.Areas.Admin.Controllers
                     model.ImageUrl = Path.GetFileName(model.ImageUrl);
                 }
                 
-                var request = new CreateOrUpdateCategoryRequest
+                var request = new CreateOrUpdateEmployeeRequest
                 {
-                    Category = model,
+                    Employee = model,
                     StoreID = "123StoreID",
                 };
                 /* call bus */
-                var response = CFBusCategory.Instance.CreateOrUpdateCategory(request);
+                var response = CFBusEmployee.Instance.CreateOrUpdateEmployee(request);
 
                 /* response */
                 if (response.Success)

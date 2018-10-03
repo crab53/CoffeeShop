@@ -9,6 +9,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Mvc;
 
 namespace CF.Business.Business.Permission
 {
@@ -48,7 +49,7 @@ namespace CF.Business.Business.Permission
                             ID = o.e.ID,
                             RoleID = o.r != null ? o.r.ID : null,
                             RoleName = o.e.IsSA ? "SuperAdmin" : (o.r != null ? o.r.Name : ""),
-                            ImageUrl = o.e.ImageUrl,
+                            ImageUrl = string.IsNullOrEmpty(o.e.ImageUrl) ? "" : Constants._PublicImages + o.e.ImageUrl,
                             Name = o.e.Name,
                             Email = o.e.Email,
                             Phone = o.e.Phone,
@@ -81,7 +82,7 @@ namespace CF.Business.Business.Permission
                             ID = o.e.ID,
                             RoleID = o.r != null ? o.r.ID : null,
                             RoleName = o.e.IsSA ? "SuperAdmin" : (o.r != null ? o.r.Name : ""),
-                            ImageUrl = o.e.ImageUrl,
+                            ImageUrl = string.IsNullOrEmpty(o.e.ImageUrl) ? "" : Constants._PublicImages + o.e.ImageUrl,
                             Name = o.e.Name,
                             Email = o.e.Email,
                             Phone = o.e.Phone,
@@ -249,6 +250,25 @@ namespace CF.Business.Business.Permission
             catch (Exception ex) { Log.Logger.Error("Error" + methodName, ex); }
             Log.Logger.Info("Response" + methodName, response);
             return response;
+        }
+
+        public List<SelectListItem> GetListRoleSelectItem(string storeId)
+        {
+            var data = new List<SelectListItem>();
+            try
+            {
+                using (var _db = new CfDb())
+                {
+                    data = _db.Roles.Where(o => o.StoreID == storeId && !o.IsDelete && o.IsActive)
+                           .Select(x => new SelectListItem
+                           {
+                               Value = x.ID,
+                               Text = x.Name,
+                           }).ToList();
+                }
+            }
+            catch (Exception ex) { };
+            return data;
         }
     }
 }

@@ -1,0 +1,103 @@
+﻿@model List<CF.DTO.Permission.RoleDTO>
+
+<!-- detail list view -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="actions">
+                    <a href="javascript:;" class="btn btn-info btn-flat btn-addon m-b-10 m-l-5" onclick=ShowModal('','')>
+                        <i class="fa fa-plus"></i> Thêm mới
+                    </a>
+                </div>
+                <table id="tblItem" class="hide nowrap table table-hover table-striped table-bordered" cellspacing="0" width='100%'>
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @if (Model != null && Model.Any())
+                        {
+
+                            foreach (var item in Model)
+                            {
+                                <tr class="odd gradeX">
+                                    <td class="text-center">
+                                        @item.ID.Substring(0, 5)
+                                    </td>
+                                    <td> @item.Name </td>
+                                    <td class="text-center">
+                                        @item.Description
+                                    </td>
+                                    @{
+                                        if (item.IsActive)
+                                        {
+                                            <td class="text-center">
+                                                <span class="label label-sm label-success"> Active </span>
+                                            </td>
+                                        }
+                                        else
+                                        {
+                                            <td class="text-center">
+                                                <span class="label label-sm label-danger"> Inactive </span>
+                                            </td>
+                                        }
+                                    }
+                                    <td class="text-center">
+                                        <a href="javascript:void(0)"
+                                           onclick='ShowModal("@item.ID","@item.Name")'
+                                           class="btn btn-info btn-xs edit details"><i class="fa fa-edit"></i>&nbsp;Cập nhập</a><span> &nbsp;</span>
+                                        <a href="javascript:void(0)"
+                                           onclick='Delete("@item.ID")'
+                                           class="btn btn-danger btn-xs delete details"><i class="fa fa-trash-o"></i>&nbsp;Xóa</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</div>
+<!-- end detail list view -->
+
+<!-- Modal -->
+<!-- Large modal -->
+
+<!--data table -->
+<script src="@Url.Content("~/Areas/Admin/js/lib/datatables/datatables.min.js")"></script>
+<script src="@Url.Content("~/Areas/Admin/js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/dataTables.buttons.min.js")"></script>
+<script src="@Url.Content("~/Areas/Admin/js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/buttons.flash.min.js")"></script>
+<script src="@Url.Content("~/Areas/Admin/js/lib/datatables/cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.min.js")"></script>
+<script src="@Url.Content("~/Areas/Admin/js/lib/datatables/cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/pdfmake.min.js")"></script>
+<script src="@Url.Content("~/Areas/Admin/js/lib/datatables/cdn.rawgit.com/bpampuch/pdfmake/0.1.18/build/vfs_fonts.js")"></script>
+<script src="@Url.Content("~/Areas/Admin/js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/buttons.html5.min.js")"></script>
+<script src="@Url.Content("~/Areas/Admin/js/lib/datatables/cdn.datatables.net/buttons/1.2.2/js/buttons.print.min.js")"></script>
+
+<script>
+    $(document).ready(function () {
+        $('#tblItem').removeClass("hide").DataTable({
+            dom: 'Bfrtip',
+            buttons: [
+                'copy', 'csv', 'excel', 'pdf', 'print'
+            ],
+
+            bStateSave: false, // save datatable state(pagination, sort, etc) in cookie.
+
+            columnDefs: [
+                { "orderable": false, "targets": [ 4] },
+                { "width": "3%", "targets": [0, 3] },
+                { "width": "10%", "targets": [1, 2] },
+                { "width": "20%", "targets": [4] },
+            ]
+        });
+    })
+</script>

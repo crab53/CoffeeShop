@@ -230,6 +230,7 @@ namespace CF.Business.Business.Permission
                     if (!string.IsNullOrEmpty(json))
                     {
                         var listPermission = JsonConvert.DeserializeObject<List<PermissionDTO>>(json);
+                        
                         var listModule = _db.Modules.Where(o => o.IsActive).ToList();
 
                         permissions = listModule.GroupJoin(listPermission, m => m.Code, p => p.Code, (m, p) => new { m, p = p.FirstOrDefault() })
