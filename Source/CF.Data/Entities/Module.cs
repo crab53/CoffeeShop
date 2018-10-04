@@ -13,6 +13,9 @@ namespace CF.Data.Entities
         [StringLength(50)]
         public string ID { get; set; }
 
+        [StringLength(50)]
+        public string ParentID { get; set; }
+
         [Required]
         [StringLength(50)]
         public string Name { get; set; }
@@ -20,9 +23,5 @@ namespace CF.Data.Entities
         public int Code { get; set; }
 
         public bool IsActive { get; set; }
-
-        public DateTime? CreatedDate { get; set; }
-
-        public DateTime? ModifiedDate { get; set; }
     }
 }

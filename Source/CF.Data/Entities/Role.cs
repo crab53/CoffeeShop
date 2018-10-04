@@ -27,8 +27,6 @@ namespace CF.Data.Entities
 
         public string Description { get; set; }
 
-        public string Permissions { get; set; }
-
         public bool IsDelete { get; set; }
     }
 }
