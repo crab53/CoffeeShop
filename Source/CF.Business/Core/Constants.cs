@@ -26,14 +26,7 @@ namespace CF.Business.Core
         {
 
         }
-
-        public enum EStoreStatus
-        {
-            Trial = 0,
-            Active = 1,
-            Expired = 2,
-        }
-
+        
         public enum EPayType
         {
             Cash = 0,

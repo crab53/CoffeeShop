@@ -6,7 +6,23 @@ using System.Threading.Tasks;
 
 namespace CF.DTO.Asset
 {
-    class LicenseDTO
+    public class LicenseDTO
     {
     }
+
+    #region Request
+
+    public class RegisterNewStoreRequest : RequestBase
+    {
+        public OwnerDTO Owner { get; set; }
+        public StoreDTO Store { get; set; }
+    }
+
+    #endregion Request
+
+    #region Response
+
+    public class RegisterNewStoreResponse : ResponseBase { }
+
+    #endregion Response
 }

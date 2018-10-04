@@ -29,9 +29,7 @@ namespace CF.Data.Entities
         public string AddressStr { get; set; }
 
         public string Description { get; set; }
-
-        public int StoreStatus { get; set; }
-
+        
         public DateTime ExpiredDate { get; set; }
 
         public bool IsDelete { get; set; }

@@ -59,13 +59,56 @@ namespace CF.Business.Common
             return key;
         }
 
-        public static string RemoveSign4VietnameseString(string str)
+        public static string RemoveSign4VietnameseString(string str, bool isMinify = false)
         {
             for (int i = 1; i < Constants.VietnameseSigns.Length; i++)
                 for (int j = 0; j < Constants.VietnameseSigns[i].Length; j++)
                     str = str.Replace(Constants.VietnameseSigns[i][j], Constants.VietnameseSigns[0][i - 1]);
 
-            return str.Trim();
+            if (isMinify)
+                str = MinifyString(str);
+
+            return str.Trim().ToLower();
+        }
+
+        private static string MinifyString(string text)
+        {
+            StringBuilder sb = new StringBuilder(text);
+            sb.Replace(" ", string.Empty);
+            sb.Replace(Environment.NewLine, string.Empty);
+            sb.Replace("\\t", string.Empty);
+            sb.Replace("`", string.Empty);
+            sb.Replace("~", string.Empty);
+            sb.Replace("!", string.Empty);
+            sb.Replace("@", string.Empty);
+            sb.Replace("#", string.Empty);
+            sb.Replace("$", string.Empty);
+            sb.Replace("%", string.Empty);
+            sb.Replace("^", string.Empty);
+            sb.Replace("&", string.Empty);
+            sb.Replace("*", string.Empty);
+            sb.Replace("(", string.Empty);
+            sb.Replace(")", string.Empty);
+            sb.Replace("-", string.Empty);
+            sb.Replace("_", string.Empty);
+            sb.Replace("=", string.Empty);
+            sb.Replace("+", string.Empty);
+            sb.Replace("[", string.Empty);
+            sb.Replace("]", string.Empty);
+            sb.Replace("{", string.Empty);
+            sb.Replace("}", string.Empty);
+            sb.Replace("\\", string.Empty);
+            sb.Replace("|", string.Empty);
+            sb.Replace(";", string.Empty);
+            sb.Replace(":", string.Empty);
+            sb.Replace("'", string.Empty);
+            sb.Replace("\"", string.Empty);
+            sb.Replace(",", string.Empty);
+            sb.Replace("<", string.Empty);
+            sb.Replace(">", string.Empty);
+            sb.Replace(".", string.Empty);
+            sb.Replace("?", string.Empty);
+            return sb.ToString();
         }
 
         public static string ToBase64String(HttpPostedFile cvFile)
